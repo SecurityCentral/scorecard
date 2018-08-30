@@ -17,11 +17,14 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from scorecard.views import health
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
+    url(r'^health$', health),
     url(r'^admin/', admin.site.urls),
 ]
 
