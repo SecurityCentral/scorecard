@@ -1,0 +1,13 @@
+{% extends 'scorecard/base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+
+    <ul>
+        {% for product in product_list %}
+        <li><a href="controls.html?product={{ product.id }}">{{ product.name }}</a>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

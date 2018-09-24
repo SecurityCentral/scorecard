@@ -1,0 +1,27 @@
+body {
+    font-family: "Lucida Console", Monaco, monospace;
+}
+
+div.maincontainer {
+    width:          90%;
+    margin:         0 auto;
+}
+
+div.pagefooter {
+    font-size:  15px;
+    text-align: center;
+}
+
+table {
+    border-collapse:    collapse;
+    width:              75%;
+}
+
+table.center {
+    margin-left:    auto;
+    margin-right:   auto;
+}
+
+td {
+    font-size: 15px;
+}

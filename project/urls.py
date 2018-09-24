@@ -17,15 +17,18 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from scorecard.views import health
+from scorecard.views import controls, health, products
+
 
 urlpatterns = [
     # Examples:
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^health$', health),
+    url(r'^$', products),
     url(r'^admin/', admin.site.urls),
+    url(r'^controls', controls),
+    url(r'^health$', health),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,13 @@
+{% extends 'scorecard/base.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block body %}
+
+    <ul>
+        {% for product_control in controls_list %}
+            <li>product_control.control.name</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
