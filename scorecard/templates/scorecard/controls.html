@@ -4,10 +4,25 @@
 
 {% block body %}
 
-    <ul>
-        {% for product_control in controls_list %}
-            <li>product_control.control.name</li>
+    <h3>Breakdown of Controls for {{ product.name }} (score: {{ product.score }} / {{ product.max_score }})</h3>
+
+    [<a href="/">Products</a>]
+
+    <br><br>
+
+    <table>
+        <tr><th>Control</th><th>Status</th><th>Score</th></tr>
+        {% for product_control in product_control_list %}
+            <tr class="{{ product_control.status }}">
+                <td>{{ product_control.control.name }}</td>
+                <td>{{ product_control.status }}</td>
+                <td>{{ control_status_values|get_item:product_control.status }}</td>
+            </tr>
         {% endfor %}
-    </ul>
+    </table>
+
+    <br><br>
+
+    [<a href="/">Products</a>]
 
 {% endblock %}

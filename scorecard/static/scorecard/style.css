@@ -15,6 +15,8 @@ div.pagefooter {
 table {
     border-collapse:    collapse;
     width:              75%;
+    border:             1px solid black;
+    padding:            5px;
 }
 
 table.center {
@@ -24,4 +26,40 @@ table.center {
 
 td {
     font-size: 15px;
+    border:     1px solid black;
+    padding:    5px;
+}
+
+th {
+    text-align: left;
+    border:     1px solid black;
+    padding:    5px;
+}
+
+tr:hover {
+    background-color: lightgrey;
+}
+
+tr.Implemented {
+    background: lightgreen;
+}
+
+tr.complete {
+    background: lightgreen;
+}
+
+tr.partial {
+    background: yellow;
+}
+
+tr.planned {
+    background: orange;
+}
+
+tr.none {
+    background: red;
+}
+
+tr.unknown {
+    background: red;
 }
