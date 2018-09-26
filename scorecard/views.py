@@ -9,7 +9,7 @@ from scorecard import scoring
 def controls(request):
     product = Product.objects.get(id=request.GET.get("product"))
     product_control_list = ProductControl.objects.filter(Q(product=product) & ~Q(status='not applicable')).\
-        order_by('control__name')
+        order_by('control__family__label', 'control__name')
 
     @register.filter
     def get_item(dictionary, key):

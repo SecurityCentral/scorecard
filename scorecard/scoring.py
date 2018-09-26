@@ -16,9 +16,10 @@ def get_control_status_values():
 
 def get_product_score(product):
     status_values = get_control_status_values()
+    # Get the product controls, but filter out all those with a status of 'not applicable'.
     product_controls = ProductControl.objects.filter(Q(product=product) & ~Q(status='not applicable')).\
         order_by('control__name')
-    max_score = len(product_controls) * 3
+    max_score = len(product_controls) * 3  # A maximum possible score is 3 x the number of controls.
     score = 0
     for product_control in product_controls:
         try:

@@ -11,9 +11,11 @@
     <br><br>
 
     <table>
-        <tr><th>Control</th><th>Status</th><th>Score</th></tr>
+        <tr><th>Standard</th><th>Family</th><th>Control</th><th>Status</th><th>Score</th></tr>
         {% for product_control in product_control_list %}
             <tr class="{{ product_control.status }}">
+                <td>{{ product_control.control.standard.name }} ({{ product_control.control.standard.label }})</td>
+                <td>{{ product_control.control.family.label }}</td>
                 <td>{{ product_control.control.name }}</td>
                 <td>{{ product_control.status }}</td>
                 <td>{{ control_status_values|get_item:product_control.status }}</td>
