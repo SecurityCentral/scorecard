@@ -2,14 +2,30 @@ body {
     font-family: "Lucida Console", Monaco, monospace;
 }
 
+button {
+    font-size: 15px;
+}
+
 div.maincontainer {
-    width:          90%;
-    margin:         0 auto;
+    width:  90%;
+    margin: 0 auto;
 }
 
 div.pagefooter {
     font-size:  15px;
     text-align: center;
+}
+
+div.NIST {
+    display: none;
+}
+
+div.supcon {
+    font-size: 12px;
+}
+
+div.technology {
+    display: none;
 }
 
 table {
@@ -25,7 +41,7 @@ table.center {
 }
 
 td {
-    font-size: 15px;
+    font-size:  15px;
     border:     1px solid black;
     padding:    5px;
 }
@@ -36,15 +52,7 @@ th {
     padding:    5px;
 }
 
-tr:hover {
-    background-color: lightgrey;
-}
-
-tr.Implemented {
-    background: lightgreen;
-}
-
-tr.complete {
+tr.complete, .implemented {
     background: lightgreen;
 }
 
@@ -56,10 +64,6 @@ tr.planned {
     background: orange;
 }
 
-tr.none {
-    background: red;
-}
-
-tr.unknown {
+tr.none, .unknown {
     background: red;
 }

@@ -4,27 +4,53 @@
 
 {% block body %}
 
-    <h3>Breakdown of Controls for {{ product.name }} (score: {{ product.score }} / {{ product.max_score }})</h3>
+    <h3>{{ product.name }} (score: {{ product.score }} / {{ product.max_score }})</h3>
 
-    [<a href="/">Products</a>]
+    <button class="peoplebutton">People</button>
+    <button class="processbutton">Process</button>
+    <button class="techbutton">Technology</button>
+    <button class="NISTbutton">Compliance</button>
+    <button class="productsbutton">Back to Products</button>
 
-    <br><br>
+    <div class="technology">
+        {% if security_capability_product_list.count > 0 %}
+            <br><br>
+            <table>
+                <tr><th>Security Capability</th><th>Status</th><th>Score</th></tr>
+                {% for security_capability_product in security_capability_product_list %}
+                    <tr class="{{ security_capability_product.status.name }}">
+                        <td>{{ security_capability_product.security_capability.name }}
+                            {% if security_capability_product.security_capability.supporting_controls|length > 0 %}
+                            <br>
+                            <div class="supcon">
+                                {{ security_capability_product.security_capability.supporting_controls }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ security_capability_product.status.name }}</td>
+                        <td>{{ security_capability_product.status.value }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <h3>No Security Capabilities Logged</h3>
+        {% endif %}
+    </div>
 
-    <table>
-        <tr><th>Standard</th><th>Family</th><th>Control</th><th>Status</th><th>Score</th></tr>
-        {% for product_control in product_control_list %}
-            <tr class="{{ product_control.status }}">
-                <td>{{ product_control.control.standard.name }} ({{ product_control.control.standard.label }})</td>
-                <td>{{ product_control.control.family.label }}</td>
-                <td>{{ product_control.control.name }}</td>
-                <td>{{ product_control.status }}</td>
-                <td>{{ control_status_values|get_item:product_control.status }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    <br><br>
-
-    [<a href="/">Products</a>]
+    <div class="NIST">
+        <br><br>
+        <table>
+            <tr><th>Standard</th><th>Family</th><th>Control</th><th>Status</th><th>Score</th></tr>
+            {% for product_control in product_control_list %}
+                <tr class="{{ product_control.status }}">
+                    <td>{{ product_control.control.standard.name }} ({{ product_control.control.standard.label }})</td>
+                    <td>{{ product_control.control.family.label }}</td>
+                    <td>{{ product_control.control.name }}</td>
+                    <td>{{ product_control.status }}</td>
+                    <td>{{ control_status_values|get_item:product_control.status }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 
 {% endblock %}

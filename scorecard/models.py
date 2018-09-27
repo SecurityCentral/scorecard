@@ -8,6 +8,22 @@ class Product(models.Model):
     percent_score = models.FloatField(default=0)
 
 
+class SecurityCapability(models.Model):
+    name = models.CharField(max_length=200, default="")
+    supporting_controls = models.CharField(max_length=200, blank=True)
+
+
+class Status(models.Model):
+    name = models.CharField(max_length=50, default="")
+    value = models.IntegerField(default=0)
+
+
+class SecurityCapabilityProduct(models.Model):
+    status = models.ForeignKey(Status, blank=True, on_delete=models.SET(""))
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    security_capability = models.ForeignKey(SecurityCapability, on_delete=models.CASCADE)
+
+
 # OpenControl data
 class Standard(models.Model):
     name = models.CharField(max_length=50)

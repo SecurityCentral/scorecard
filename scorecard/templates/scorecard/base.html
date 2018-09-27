@@ -16,6 +16,8 @@
 
         <div class="maincontainer">
 
+            <h1>Scorecard</h1>
+
         {% block body %}
         {% endblock %}
 
@@ -25,5 +27,12 @@
         <div class="pagefooter">
         </div>
     </body>
+
+    <script
+			  src="https://code.jquery.com/jquery-3.3.1.js"
+			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+			  crossorigin="anonymous">
+    </script>
+    <script src="{% static 'scorecard/utils.js' %}"></script>
 
 </html>
