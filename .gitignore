@@ -1,6 +1,7 @@
 # Django
 db.sqlite3
 staticfiles/
+*.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -51,9 +52,6 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-
 # Sphinx documentation
 docs/_build/
 
@@ -62,5 +60,7 @@ target/
 
 # PyCharm
 .idea/
+
+# Python virtual environment
 venv/
 
