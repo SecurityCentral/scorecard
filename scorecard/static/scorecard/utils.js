@@ -25,5 +25,5 @@ $(".peoplebutton").click(function() {
 });
 
 $(".productsbutton").click(function() {
-    window.location.replace("/");
+    window.location.replace("/productsview/");
 });

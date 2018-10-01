@@ -16,19 +16,42 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from rest_framework import routers, serializers, viewsets
+from scorecard.views import controls, health, productsview, Product
 
-from scorecard.views import controls, health, products
 
+# Serializers define the API representation.
+class ProductSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('url', 'name', 'score', 'max_score', 'percent_score')
+
+
+# ViewSets define the view behavior.
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r'products', ProductViewSet)
 
 urlpatterns = [
     # Examples:
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^$', products),
     url(r'^admin/', admin.site.urls),
     url(r'^controls', controls),
     url(r'^health$', health),
+    url(r'^productsview/', productsview),
+
+    # Wire up our API using automatic URL routing.
+    # Additionally, we include login URLs for the browsable API.
+
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 if settings.DEBUG:

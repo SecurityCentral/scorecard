@@ -28,7 +28,7 @@ def health(request):
     return HttpResponse(status=200)
 
 
-def products(request):
-    scoring.update_product_scores()
+def productsview(request):
+    # scoring.update_product_scores()
     product_list = Product.objects.all()
     return render(request, 'scorecard/products.html', {'product_list': product_list})
