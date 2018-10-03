@@ -17,7 +17,8 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers, serializers, viewsets
-from scorecard.views import controls, health, productsview, Product
+from scorecard.views import controls, health, productsview
+from scorecard.models import Product
 
 
 # Serializers define the API representation.
@@ -58,4 +59,4 @@ if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),
-] + urlpatterns
+    ] + urlpatterns
