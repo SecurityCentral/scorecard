@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    $(".technology").hide();
-    $(".NIST").hide();
     $("body").css("overflow", "auto");
 });
 
@@ -22,8 +20,4 @@ $(".processbutton").click(function() {
 $(".peoplebutton").click(function() {
     $(".NIST").hide();
     $(".technology").hide();
-});
-
-$(".productsbutton").click(function() {
-    window.location.replace("/productsview/");
 });

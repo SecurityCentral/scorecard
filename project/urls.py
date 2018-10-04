@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers, serializers, viewsets
-from scorecard.views import controls, health, productsview
+from scorecard.views import businessunitsview, controlsview, health, productsview
 from scorecard.models import Product
 
 
@@ -44,7 +44,8 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', admin.site.urls),
-    url(r'^controls', controls),
+    url(r'^businessunitsview', businessunitsview),
+    url(r'^controlsview', controlsview),
     url(r'^health$', health),
     url(r'^productsview/', productsview),
 

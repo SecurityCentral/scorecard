@@ -1,6 +1,10 @@
 from django.contrib import admin
-from .models import Control, ControlFamily, Product, ProductControl, SecurityCapability, SecurityCapabilityProduct, \
-    Standard, Status
+from .models import BusinessUnit, Control, ControlFamily, Product, ProductControl, SecurityCapability, \
+    SecurityCapabilityProduct, Standard, Status
+
+
+class BusinessUnitAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 class ControlAdmin(admin.ModelAdmin):
@@ -12,7 +16,7 @@ class ControlFamilyAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'score', 'max_score', 'percent_score', 'business_unit')
 
 
 class ProductControlAdmin(admin.ModelAdmin):
@@ -35,6 +39,7 @@ class StatusAdmin(admin.ModelAdmin):
     list_display = ('name', 'value')
 
 
+admin.site.register(BusinessUnit, BusinessUnitAdmin)
 admin.site.register(Control, ControlAdmin)
 admin.site.register(ControlFamily, ControlFamilyAdmin)
 admin.site.register(Product, ProductAdmin)

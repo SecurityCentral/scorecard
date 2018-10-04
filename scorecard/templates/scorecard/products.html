@@ -4,11 +4,13 @@
 
 {% block body %}
 
+    <h3><a href="/businessunitsview">Business Units</a> > {{ bu.name }}</h3>
+
     <table>
         <tr><th>Product</th><th>Score</th></tr>
         {% for product in product_list %}
         <tr>
-            <td><a href="/controls?product={{ product.id }}">{{ product.name }}</a></td>
+            <td><a href="/controlsview?product={{ product.id }}">{{ product.name }}</a></td>
             <td>{{ product.score }} / {{ product.max_score }} ({{ product.percent_score }}%)</td>
         </tr>
         {% endfor %}
