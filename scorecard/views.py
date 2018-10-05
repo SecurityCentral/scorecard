@@ -2,13 +2,14 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.shortcuts import render
 from django.template.defaulttags import register
-from .models import BusinessUnit, Product, ProductControl, SecurityCapabilityProduct
-from scorecard import scoring
+from .models import BusinessUnit, BusinessUnitGroup, Product, ProductControl, SecurityCapabilityProduct
+from scorecard import product_pages, scoring
 
 
 def businessunitsview(request):
+    bug_list = BusinessUnitGroup.objects.all().order_by('name')
     bu_list = BusinessUnit.objects.all().order_by('name')
-    return render(request, 'scorecard/businessunits.html', {'bu_list': bu_list})
+    return render(request, 'scorecard/businessunits.html', {'bug_list': bug_list, 'bu_list': bu_list})
 
 
 def controlsview(request):
@@ -38,3 +39,9 @@ def productsview(request):
     business_unit = BusinessUnit.objects.get(id=request.GET.get("bu"))
     product_list = Product.objects.filter(Q(business_unit=business_unit))
     return render(request, 'scorecard/products.html', {'product_list': product_list, 'bu': business_unit})
+
+
+def submit(request):
+    if 'update' in request.POST:
+        product_pages.update_product_data()
+    return businessunitsview(request)

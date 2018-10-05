@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers, serializers, viewsets
-from scorecard.views import businessunitsview, controlsview, health, productsview
+from scorecard.views import businessunitsview, controlsview, health, productsview, submit
 from scorecard.models import Product
 
 
@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^controlsview', controlsview),
     url(r'^health$', health),
     url(r'^productsview/', productsview),
+    url(r'^submit', submit),
 
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.

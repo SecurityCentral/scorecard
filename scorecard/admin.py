@@ -1,10 +1,14 @@
 from django.contrib import admin
-from .models import BusinessUnit, Control, ControlFamily, Product, ProductControl, SecurityCapability, \
-    SecurityCapabilityProduct, Standard, Status
+from .models import BusinessUnit, BusinessUnitGroup, Control, ControlFamily, Product, ProductControl, \
+    SecurityCapability, SecurityCapabilityProduct, Standard, Status
 
 
 class BusinessUnitAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'bu_group', 'pp_id')
+
+
+class BusinessUnitGroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'pp_id')
 
 
 class ControlAdmin(admin.ModelAdmin):
@@ -16,7 +20,7 @@ class ControlFamilyAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'score', 'max_score', 'percent_score', 'business_unit')
+    list_display = ('name', 'score', 'max_score', 'percent_score', 'business_unit', 'pp_id')
 
 
 class ProductControlAdmin(admin.ModelAdmin):
@@ -40,6 +44,7 @@ class StatusAdmin(admin.ModelAdmin):
 
 
 admin.site.register(BusinessUnit, BusinessUnitAdmin)
+admin.site.register(BusinessUnitGroup, BusinessUnitGroupAdmin)
 admin.site.register(Control, ControlAdmin)
 admin.site.register(ControlFamily, ControlFamilyAdmin)
 admin.site.register(Product, ProductAdmin)

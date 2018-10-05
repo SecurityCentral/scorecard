@@ -6,13 +6,30 @@
 
     <h3>Business Units</h3>
 
-    <table>
-        {% for bu in bu_list %}
-        <ul>
-            <li><a href="/productsview?bu={{ bu.id }}">{{ bu.name }}</a></li>
-        </ul>
-        {% endfor %}
+    {% if bug_list.count > 0 %}
+        <table>
+            {% for bug in bug_list %}
+                <tr>
+                    <td>
+                        {{ bug.name }}
+                        {% for bu in bu_list %}
+                            <ul>
+                                {% if bu.bu_group.id == bug.id %}
+                                    <li><a href="/productsview?bu={{ bu.id }}">{{ bu.name }}</a></li>
+                                {% endif %}
+                            </ul>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
 
-    </table>
+        <br/><br/><br/>
+    {% endif %}
+
+    <form action="submit" method="post">
+        {% csrf_token %}
+        <input type="submit" name="update" value="Update Data"/>
+    </form>
 
 {% endblock %}

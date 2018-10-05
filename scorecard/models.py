@@ -1,8 +1,15 @@
 from django.db import models
 
 
+class BusinessUnitGroup(models.Model):
+    name = models.CharField(max_length=100, default="")
+    pp_id = models.IntegerField(default=0)
+
+
 class BusinessUnit(models.Model):
     name = models.CharField(max_length=100, default="")
+    bu_group = models.ForeignKey(BusinessUnitGroup, on_delete=models.SET(None), null=True)
+    pp_id = models.IntegerField(default=0)
 
 
 class Product(models.Model):
@@ -11,6 +18,7 @@ class Product(models.Model):
     max_score = models.IntegerField(default=1)
     percent_score = models.FloatField(default=0)
     business_unit = models.ForeignKey(BusinessUnit, on_delete=models.SET(None), null=True)
+    pp_id = models.IntegerField(default=0)
 
 
 class SecurityCapability(models.Model):

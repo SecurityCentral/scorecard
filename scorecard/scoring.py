@@ -2,13 +2,16 @@ from django.db.models import Q
 from .models import Product, ProductControl
 
 
-# potential statuses:
-#       Implemented, complete   (green)     3
-#       partial                 (yellow)    2
-#       planned                 (orange)    1
-#       none, unknown           (red)       0
-#       not applicable          (grey)      -
+'''
+    Executes all scoring related functionality.
 
+    potential statuses:
+          Implemented, complete   (green)     3
+          partial                 (yellow)    2
+          planned                 (orange)    1
+          none, unknown           (red)       0
+          not applicable          (grey)      -    
+'''
 
 def get_control_status_values():
     return {'Implemented': 3, 'complete': 3, 'partial': 2, 'planned': 1, 'none': 0, 'unknown': 0}
