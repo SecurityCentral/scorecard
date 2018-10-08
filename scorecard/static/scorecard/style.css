@@ -20,6 +20,14 @@ div.NIST {
     display: none;
 }
 
+div.people {
+    display: none;
+}
+
+div.technology {
+    display: none;
+}
+
 div.supcon {
     font-size: 12px;
 }

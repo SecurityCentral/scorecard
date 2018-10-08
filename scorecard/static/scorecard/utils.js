@@ -3,21 +3,26 @@ $(document).ready(function() {
 });
 
 $(".techbutton").click(function() {
-    $(".NIST").hide();
+    hideAll();
     $(".technology").show();
 });
 
 $(".NISTbutton").click(function() {
+    hideAll();
     $(".NIST").show();
-    $(".technology").hide();
 });
 
 $(".processbutton").click(function() {
-    $(".NIST").hide();
-    $(".technology").hide();
+    hideAll();
 });
 
 $(".peoplebutton").click(function() {
-    $(".NIST").hide();
-    $(".technology").hide();
+    hideAll();
+    $(".people").show();
 });
+
+function hideAll() {
+    $(".NIST").hide();
+    $(".people").hide();
+    $(".technology").hide();
+}

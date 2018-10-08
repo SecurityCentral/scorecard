@@ -6,15 +6,15 @@
 
     <h3>Business Units</h3>
 
-    {% if bug_list.count > 0 %}
+    {% if bu_group_list.count > 0 %}
         <table>
-            {% for bug in bug_list %}
+            {% for bu_group in bu_group_list %}
                 <tr>
                     <td>
-                        {{ bug.name }}
+                        {{ bu_group.name }}
                         {% for bu in bu_list %}
                             <ul>
-                                {% if bu.bu_group.id == bug.id %}
+                                {% if bu.bu_group.id == bu_group.id %}
                                     <li><a href="/productsview?bu={{ bu.id }}">{{ bu.name }}</a></li>
                                 {% endif %}
                             </ul>

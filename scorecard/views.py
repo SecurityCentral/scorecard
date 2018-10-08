@@ -2,22 +2,23 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.shortcuts import render
 from django.template.defaulttags import register
-from .models import BusinessUnit, BusinessUnitGroup, Product, ProductControl, SecurityCapabilityProduct
+from .models import BusinessUnit, BusinessUnitGroup, Product, ProductControl, ProductRole, SecurityCapabilityProduct
 from scorecard import product_pages, scoring
 
 
 def businessunitsview(request):
-    bug_list = BusinessUnitGroup.objects.all().order_by('name')
+    bu_group_list = BusinessUnitGroup.objects.all().order_by('name')
     bu_list = BusinessUnit.objects.all().order_by('name')
-    return render(request, 'scorecard/businessunits.html', {'bug_list': bug_list, 'bu_list': bu_list})
+    return render(request, 'scorecard/businessunits.html', {'bu_group_list': bu_group_list, 'bu_list': bu_list})
 
 
 def controlsview(request):
-    product = Product.objects.get(id=request.GET.get("product"))
-    product_control_list = ProductControl.objects.filter(Q(product=product) & ~Q(status='not applicable')).\
+    product = Product.objects.get(id=request.GET.get('product'))
+    product_control_list = ProductControl.objects.filter(Q(product=product) & ~Q(status="not applicable")).\
         order_by('control__family__label', 'control__name')
     security_capability_product_list = SecurityCapabilityProduct.objects.filter(Q(product=product) &
         ~Q(status__name='not applicable')).order_by('security_capability__name')
+    product_roles_list = ProductRole.objects.filter(Q(product=product)).order_by('description')
 
     @register.filter
     def get_item(dictionary, key):
@@ -27,7 +28,8 @@ def controlsview(request):
                   {'product': product,
                    'product_control_list': product_control_list,
                    'control_status_values': scoring.get_control_status_values(),
-                   'security_capability_product_list': security_capability_product_list})
+                   'security_capability_product_list': security_capability_product_list,
+                   'product_roles_list': product_roles_list})
 
 
 def health(request):

@@ -13,6 +13,25 @@
     <button class="techbutton">Technology</button>
     <button class="NISTbutton">Compliance</button>
 
+    <div class="people">
+        {% if product_roles_list.count > 0 %}
+            <br><br>
+            <table>
+                <tr><th>Role</th><th>Contact</th><th>E-Mail</th></tr>
+                {% for product_role in product_roles_list %}
+                    <tr>
+                        <td>{{ product_role.description }}</td>
+                        <td><a href="https://rover.redhat.com/people/profile/{{ product_role.person.username }}/"
+                               target="_blank">{{ product_role.person.full_name }}</a></td>
+                        <td><a href="mailto:{{ product_role.person.email }}">{{ product_role.person.email }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <h3>No People Logged</h3>
+        {% endif %}
+    </div>
+
     <div class="technology">
         {% if security_capability_product_list.count > 0 %}
             <br><br>
