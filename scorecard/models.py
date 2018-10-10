@@ -44,8 +44,8 @@ class Status(models.Model):
     value = models.IntegerField(default=0)
 
 
-class SecurityCapabilityProduct(models.Model):
-    status = models.ForeignKey(Status, blank=True, on_delete=models.SET(''))
+class ProductSecurityCapability(models.Model):
+    status = models.ForeignKey(Status, null=True, on_delete=models.SET(''))
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     security_capability = models.ForeignKey(SecurityCapability, on_delete=models.CASCADE)
 

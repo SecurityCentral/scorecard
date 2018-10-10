@@ -16,27 +16,75 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers, serializers, viewsets, filters
 from scorecard.views import businessunitsview, controlsview, health, productsview, submit
-from scorecard.models import Product
+from scorecard.models import Product, ProductSecurityCapability, SecurityCapability, Status
 
 
 # Serializers define the API representation.
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
-        fields = ('url', 'name', 'score', 'max_score', 'percent_score')
+        fields = ('id', 'name', 'score', 'max_score', 'percent_score')
+
+
+class ProductSecurityCapabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSecurityCapability
+        fields = ('id', 'product', 'security_capability', 'status')
+
+
+class SecurityCapabilitySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = SecurityCapability
+        fields = ('id', 'name', 'supporting_controls')
+
+
+class StatusSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Status
+        fields = ('id', 'name', 'value')
 
 
 # ViewSets define the view behavior.
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = (filters.SearchFilter,)
+    filter_fields = ('name', 'score', 'max_score', 'percent_score')
+    search_fields = ('name',)
+
+
+class ProductSecurityCapabilityViewSet(viewsets.ModelViewSet):
+    queryset = ProductSecurityCapability.objects.all()
+    serializer_class = ProductSecurityCapabilitySerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('product__name', 'security_capability__name', 'security_capability__supporting_controls',
+                     'status__name')
+
+
+class SecurityCapabilityViewSet(viewsets.ModelViewSet):
+    queryset = SecurityCapability.objects.all()
+    serializer_class = SecurityCapabilitySerializer
+    filter_backends = (filters.SearchFilter,)
+    filter_fields = ('name', 'supporting_controls')
+    search_fields = ('name', 'supporting_controls')
+
+
+class StatusViewSet(viewsets.ModelViewSet):
+    queryset = Status.objects.all()
+    serializer_class = StatusSerializer
+    filter_backends = (filters.SearchFilter,)
+    filter_fields = ('name', 'value')
+    search_fields = ('name',)
 
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'products', ProductViewSet)
+router.register(r'productsecuritycapabilities', ProductSecurityCapabilityViewSet)
+router.register(r'securitycapabilities', SecurityCapabilityViewSet)
+router.register(r'statuses', StatusViewSet)
 
 urlpatterns = [
     # Examples:

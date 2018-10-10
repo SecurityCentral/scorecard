@@ -1,6 +1,6 @@
 import requests
-from scorecard.models import BusinessUnit, BusinessUnitGroup, Person, Product, ProductRole
-
+from scorecard.models import BusinessUnit, BusinessUnitGroup, Person, Product, ProductSecurityCapability, ProductRole, \
+    SecurityCapability, Status
 
 '''
     Acquires all business unit and product data via the Product Pages API.
@@ -32,8 +32,9 @@ def update_product_data():
             updated_bu.save()
 
     # Get all the product data and create or update accordingly.
-
     products = requests.get(PRODUCTS_API, headers=dict(Accept='application/json'), verify=False).json()
+    security_capabilities = SecurityCapability.objects.all()
+    none_status = Status.objects.get(value=0)
 
     for product in products:
         updated_product, _ = Product.objects.get_or_create(pp_id=product['id'])
@@ -42,7 +43,6 @@ def update_product_data():
         updated_product.save()
 
         # For each product, get all the associated people.
-
         people = requests.get(PRODUCTS_API + str(updated_product.pp_id) + '/people/',
                               headers=dict(Accept='application/json'), verify=False).json()
 
@@ -86,3 +86,11 @@ def update_product_data():
         if not security_program_manager_found:
             product_role, _ = ProductRole.objects.get_or_create(description=PRODUCT_SECURITY_PROGRAM_MANAGER,
                                                                 product=updated_product, person=None)
+
+        # Update (or create default) security capabilities.
+        for security_capability in security_capabilities:
+            updated_security_capability_product, created = ProductSecurityCapability.objects.get_or_create(
+                product=updated_product, security_capability=security_capability)
+            if created:
+                updated_security_capability_product.status = none_status
+                updated_security_capability_product.save()

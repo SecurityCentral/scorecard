@@ -13,6 +13,7 @@ from .models import Product, ProductControl
           not applicable          (grey)      -    
 '''
 
+
 def get_control_status_values():
     return {'Implemented': 3, 'complete': 3, 'partial': 2, 'planned': 1, 'none': 0, 'unknown': 0}
 
@@ -32,11 +33,15 @@ def get_product_score(product):
     return score, max_score
 
 
-def update_product_scores():
+def update_all_product_scores():
     products = Product.objects.all()
     for product in products:
-        score, max_score = get_product_score(product)
-        product.score = score
-        product.max_score = max_score
-        product.percent_score = round((score / max_score) * 100, 1)
-        product.save()
+        update_product_score(product)
+
+
+def update_product_score(product):
+    score, max_score = get_product_score(product)
+    product.score = score
+    product.max_score = max_score
+    product.percent_score = round((score / max_score) * 100, 1)
+    product.save()

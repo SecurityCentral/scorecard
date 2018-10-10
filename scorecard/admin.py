@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import BusinessUnit, BusinessUnitGroup, Control, ControlFamily, Person, Product, ProductRole, \
-    ProductControl, SecurityCapability, SecurityCapabilityProduct, Standard, Status
+    ProductControl, ProductSecurityCapability, SecurityCapability, Standard, Status
 
 
 class BusinessUnitAdmin(admin.ModelAdmin):
@@ -39,7 +39,7 @@ class SecurityCapabilityAdmin(admin.ModelAdmin):
     list_display = ('name', 'supporting_controls')
 
 
-class SecurityCapabilityProductAdmin(admin.ModelAdmin):
+class ProductSecurityCapabilityAdmin(admin.ModelAdmin):
     list_display = ('status', 'product', 'security_capability')
 
 
@@ -59,7 +59,7 @@ admin.site.register(Person, PersonAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductRole, ProductRoleAdmin)
 admin.site.register(ProductControl, ProductControlAdmin)
+admin.site.register(ProductSecurityCapability, ProductSecurityCapabilityAdmin)
 admin.site.register(SecurityCapability, SecurityCapabilityAdmin)
-admin.site.register(SecurityCapabilityProduct, SecurityCapabilityProductAdmin)
 admin.site.register(Standard, StandardAdmin)
 admin.site.register(Status, StatusAdmin)
