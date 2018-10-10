@@ -3,7 +3,11 @@ body {
 }
 
 button {
-    font-size: 15px;
+    font-size:      15px;
+    color:          black;
+    border:         solid 1px;
+    border-radius:  10px;
+    padding:        5px;
 }
 
 div.maincontainer {
@@ -70,4 +74,5 @@ tr.planned {
 
 tr.none, .unknown {
     background: red;
+    color:      yellow;
 }

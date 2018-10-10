@@ -19,11 +19,22 @@
             <table>
                 <tr><th>Role</th><th>Contact</th><th>E-Mail</th></tr>
                 {% for product_role in product_roles_list %}
-                    <tr>
-                        <td>{{ product_role.description }}</td>
-                        <td><a href="https://rover.redhat.com/people/profile/{{ product_role.person.username }}/"
-                               target="_blank">{{ product_role.person.full_name }}</a></td>
-                        <td><a href="mailto:{{ product_role.person.email }}">{{ product_role.person.email }}</a></td>
+                    {% if product_role.person == None %}
+                        <tr class="none">
+                            <td>{{ product_role.description }}</td>
+                            <td>NONE</td>
+                            <td>NONE</td>
+                    {% else %}
+                        <tr>
+                            <td>{{ product_role.description }}</td>
+                            <td>
+                                <a href="https://rover.redhat.com/people/profile/{{ product_role.person.username }}/"
+                                   target="_blank">{{ product_role.person.full_name }}</a>
+                            </td>
+                            <td>
+                                <a href="mailto:{{ product_role.person.email }}">{{ product_role.person.email }}</a>
+                            </td>
+                    {% endif %}
                     </tr>
                 {% endfor %}
             </table>

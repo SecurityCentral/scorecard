@@ -12,6 +12,7 @@ PRODUCTS_API = PRODUCT_PAGES_API + '/products/'
 SECURITY_CHAMPION = "Security Escalation Contact"
 PROGRAM_MANAGER = "Program Manager"
 PRODUCT_SECURITY = "Product Security"
+PRODUCT_SECURITY_PROGRAM_MANAGER = PRODUCT_SECURITY + " " + PROGRAM_MANAGER
 
 
 def update_product_data():
@@ -44,23 +45,30 @@ def update_product_data():
 
         people = requests.get(PRODUCTS_API + str(updated_product.pp_id) + '/people/',
                               headers=dict(Accept='application/json'), verify=False).json()
+
+        security_champion_found = False
+        security_program_manager_found = False
+
         for person in people:
             product_role = ''
             if 'description__name' in person.keys():
                 description = person['description__name']
 
-                # Establish a Security Champion for the product.
+                # Establish a Security Champion.
                 if SECURITY_CHAMPION.lower() in description.lower():
                     product_role = SECURITY_CHAMPION
+                    security_champion_found = True
 
                 if "function__name" in person.keys():
                     function_name = person['function__name']
 
-                    # Establish a Product Security Program Manager
+                    # Establish a Product Security Program Manager.
                     if PROGRAM_MANAGER.lower() in description.lower() and PRODUCT_SECURITY.lower() in \
                             function_name.lower():
-                        product_role = "Product Security Program Manager"
+                        product_role = PRODUCT_SECURITY_PROGRAM_MANAGER
+                        security_program_manager_found = True
 
+                # Record the product role.
                 if not product_role == "":
                     updated_person, _ = Person.objects.get_or_create(pp_id=person['id'])
                     updated_person.full_name = person['user_full_name']
@@ -69,3 +77,12 @@ def update_product_data():
                     updated_person.save()
                     product_role, _ = ProductRole.objects.get_or_create(description=product_role,
                                                                         product=updated_product, person=updated_person)
+        # If the product doesn't have a Security Champion, report it.
+        if not security_champion_found:
+            product_role, _ = ProductRole.objects.get_or_create(description=SECURITY_CHAMPION,
+                                                                product=updated_product, person=None)
+
+        # If the product doesn't have a Security Program Manager, report it.
+        if not security_program_manager_found:
+            product_role, _ = ProductRole.objects.get_or_create(description=PRODUCT_SECURITY_PROGRAM_MANAGER,
+                                                                product=updated_product, person=None)
