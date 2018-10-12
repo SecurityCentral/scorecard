@@ -25,7 +25,7 @@ def get_product_score(product):
         try:
             score += status_values[product_control.status]
         except KeyError:
-            print(f">>>> ERROR: Unknown product control status: '{product_control.status}'")
+            print(">>>> ERROR: Unknown product control status: '%s'" % (product_control.status))
     return score, max_score
 
 
