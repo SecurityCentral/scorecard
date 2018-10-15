@@ -10,12 +10,15 @@
         <table>
             {% for bu_group in bu_group_list %}
                 <tr>
-                    <td>
+                    <td class="bugroup">
                         {{ bu_group.name }}
                         {% for bu in bu_list %}
                             <ul>
                                 {% if bu.bu_group.id == bu_group.id %}
-                                    <li><a href="/productsview?bu={{ bu.id }}">{{ bu.name }}</a></li>
+                                    <li>
+                                        <a href="/productsview?bu={{ bu.id }}">{{ bu.name }}</a>
+                                        {{ bu.score }}/{{ bu.max_score }} ({{ bu.percent_score}}%)
+                                    </li>
                                 {% endif %}
                             </ul>
                         {% endfor %}

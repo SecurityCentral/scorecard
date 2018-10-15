@@ -2,7 +2,8 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.shortcuts import render
 from django.template.defaulttags import register
-from .models import BusinessUnit, BusinessUnitGroup, Product, ProductControl, ProductRole, ProductSecurityCapability
+from .models import BusinessUnit, BusinessUnitGroup, Product, ProductControl, ProductSecurityRole, \
+    ProductSecurityCapability
 from scorecard import product_pages, scoring
 
 
@@ -17,8 +18,9 @@ def controlsview(request):
     product_control_list = ProductControl.objects.filter(Q(product=product) & ~Q(status="not applicable")).\
         order_by('control__family__label', 'control__name')
     security_capability_product_list = ProductSecurityCapability.objects.filter(Q(product=product) &
-        ~Q(status__name='not applicable')).order_by('security_capability__name')
-    product_roles_list = ProductRole.objects.filter(Q(product=product)).order_by('description')
+                                                                                ~Q(status__name='not applicable')).\
+        order_by('security_capability__name')
+    product_roles_list = ProductSecurityRole.objects.filter(Q(product=product)).order_by('role__description')
 
     @register.filter
     def get_item(dictionary, key):

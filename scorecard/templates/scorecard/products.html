@@ -11,7 +11,7 @@
         {% for product in product_list %}
         <tr>
             <td><a href="/controlsview?product={{ product.id }}">{{ product.name }}</a></td>
-            <td>{{ product.score }} / {{ product.max_score }} ({{ product.percent_score }}%)</td>
+            <td>{{ product.total_score }}/{{ product.max_total_score }} ({{ product.total_percent_score }}%)</td>
         </tr>
         {% endfor %}
 

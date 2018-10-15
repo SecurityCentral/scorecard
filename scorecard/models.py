@@ -9,6 +9,9 @@ class BusinessUnitGroup(models.Model):
 class BusinessUnit(models.Model):
     name = models.CharField(max_length=100, default='')
     bu_group = models.ForeignKey(BusinessUnitGroup, on_delete=models.SET(None), null=True)
+    score = models.IntegerField(default=0)
+    max_score = models.IntegerField(default=1)
+    percent_score = models.FloatField(default=0)
     pp_id = models.IntegerField(default=0)
 
 
@@ -21,15 +24,32 @@ class Person(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    score = models.IntegerField(default=0)
-    max_score = models.IntegerField(default=1)
-    percent_score = models.FloatField(default=0)
+    people_score = models.IntegerField(default=0)
+    max_people_score = models.IntegerField(default=1)
+    people_percent_score = models.FloatField(default=0)
+    process_score = models.IntegerField(default=0)
+    max_process_score = models.IntegerField(default=1)
+    process_percent_score = models.FloatField(default=0)
+    technology_score = models.IntegerField(default=0)
+    max_technology_score = models.IntegerField(default=1)
+    technology_percent_score = models.FloatField(default=0)
+    compliance_score = models.IntegerField(default=0)
+    max_compliance_score = models.IntegerField(default=1)
+    compliance_percent_score = models.FloatField(default=0)
+    total_score = models.IntegerField(default=0)
+    max_total_score = models.IntegerField(default=1)
+    total_percent_score = models.FloatField(default=0)
     business_unit = models.ForeignKey(BusinessUnit, on_delete=models.SET(None), null=True)
     pp_id = models.IntegerField(default=0)
 
 
-class ProductRole(models.Model):
-    description = models.CharField(max_length=200, default='')
+class SecurityRole(models.Model):
+    description = models.CharField(max_length=200, default='', blank=True)
+    function = models.CharField(max_length=200, default='', blank=True)
+
+
+class ProductSecurityRole(models.Model):
+    role = models.ForeignKey(SecurityRole, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET(None), null=True)
     person = models.ForeignKey(Person, on_delete=models.SET(None), null=True)
 

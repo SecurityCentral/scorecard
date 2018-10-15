@@ -6,27 +6,29 @@
 
 <h3><a href="/businessunitsview">Business Units</a> >
     <a href="/productsview?bu={{ product.business_unit.id }}">{{ product.business_unit.name }}</a> >
-    {{ product.name }} (score: {{ product.score }} / {{ product.max_score }})</h3>
+    {{ product.name }} (score: {{ product.total_score }} / {{ product.max_total_score }})</h3>
 
-    <button class="peoplebutton">People</button>
-    <button class="processbutton">Process</button>
-    <button class="techbutton">Technology</button>
-    <button class="NISTbutton">Compliance</button>
+    <button class="peoplebutton">People {{ product.people_percent_score }}%</button>
+    <button class="processbutton">Process {{ product.process_percent_score }}%</button>
+    <button class="techbutton">Technology {{ product.technology_percent_score }}%</button>
+    <button class="NISTbutton">Compliance {{ product.compliance_percent_score }}%</button>
 
     <div class="people">
         {% if product_roles_list.count > 0 %}
             <br><br>
             <table>
-                <tr><th>Role</th><th>Contact</th><th>E-Mail</th></tr>
+                <tr><th>Description</th><th>Function</th><th>Contact</th><th>E-Mail</th></tr>
                 {% for product_role in product_roles_list %}
                     {% if product_role.person == None %}
                         <tr class="none">
-                            <td>{{ product_role.description }}</td>
+                            <td>{{ product_role.role.description }}</td>
+                            <td>{{ product_role.role.function }}</td>
                             <td>NONE</td>
                             <td>NONE</td>
                     {% else %}
                         <tr>
-                            <td>{{ product_role.description }}</td>
+                            <td>{{ product_role.role.description }}</td>
+                            <td>{{ product_role.role.function }}</td>
                             <td>
                                 <a href="https://rover.redhat.com/people/profile/{{ product_role.person.username }}/"
                                    target="_blank">{{ product_role.person.full_name }}</a>

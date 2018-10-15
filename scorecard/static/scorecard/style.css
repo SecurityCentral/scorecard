@@ -54,6 +54,10 @@ td {
     padding:    5px;
 }
 
+td.bugroup {
+    column-span: all;
+}
+
 th {
     text-align: left;
     border:     1px solid black;
