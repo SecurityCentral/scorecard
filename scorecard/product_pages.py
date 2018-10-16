@@ -96,4 +96,5 @@ def update_product_data():
                 updated_security_capability_product.save()
 
         scoring.update_product_score(updated_product)
-        scoring.update_business_unit_scores()
+
+    scoring.update_business_unit_scores()
