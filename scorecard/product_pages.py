@@ -14,7 +14,8 @@ SECURITY_CHAMPION = "Security Escalation Contact"
 PROGRAM_MANAGER = "Program Manager"
 PRODUCT_SECURITY = "Product Security"
 PRODUCT_SECURITY_PROGRAM_MANAGER = PRODUCT_SECURITY + " " + PROGRAM_MANAGER
-TRUSTED_CAS = '/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt'
+# TRUSTED_CAS = '/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt'
+TRUSTED_CAS = './scorecard/static/scorecard/ca-bundle.trust.crt'
 
 
 def update_product_data():
