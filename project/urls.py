@@ -25,7 +25,7 @@ from scorecard.models import Product, ProductSecurityCapability, SecurityCapabil
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'name', 'score', 'max_score', 'percent_score')
+        fields = ('id', 'name', 'total_score', 'max_total_score', 'total_percent_score')
 
 
 class ProductSecurityCapabilitySerializer(serializers.ModelSerializer):
@@ -51,7 +51,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (filters.SearchFilter,)
-    filter_fields = ('name', 'score', 'max_score', 'percent_score')
+    filter_fields = ('name', 'total_score', 'max_total_score', 'total_percent_score')
     search_fields = ('name',)
 
 
