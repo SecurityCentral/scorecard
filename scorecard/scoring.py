@@ -56,7 +56,7 @@ def get_product_scores(product):
         try:
             compliance_score += status_values[product_control.status]
         except KeyError:
-            print(f">>>> ERROR: Unknown product control status: '{product_control.status}'")
+            print(">>>> ERROR: Unknown product control status: '%s'" % product_control.status)
 
     return {'people_score':         people_score,
             'max_people_score':     max_people_score,
