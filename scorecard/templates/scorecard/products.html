@@ -1,0 +1,20 @@
+{% extends 'scorecard/base.html' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+
+    <h3><a href="/businessunitsview">Business Units</a> > {{ bu.name }}</h3>
+
+    <table>
+        <tr><th>Product</th><th>Score</th></tr>
+        {% for product_score in product_score_list %}
+        <tr>
+            <td><a href="/controlsview?product={{ product_score.product.id }}">{{ product_score.product.name }}</a></td>
+            <td>{{ product_score.score }}/{{ product_score.max_score }} ({{ product_score.percent }}%)</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+{% endblock %}

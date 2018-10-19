@@ -1,0 +1,38 @@
+{% extends 'scorecard/base.html' %}
+
+{% block title %}Business Units{% endblock %}
+
+{% block body %}
+
+    <h3>Business Units</h3>
+
+    {% if bu_group_list|length > 0 %}
+        <table>
+            {% for bu_group in bu_group_list %}
+                <tr>
+                    <td class="bugroup">
+                        {{ bu_group.name }}
+                        {% for bu_score in bu_score_list %}
+                            <ul>
+                                {% if bu_score.bu.bu_group.id == bu_group.id %}
+                                    <li>
+                                        <a href="/productsview?bu={{ bu_score.bu.id }}">{{ bu_score.bu.name }}</a>
+                                        {{ bu_score.score }}/{{ bu_score.max_score }} ({{ bu_score.percent}}%)
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <br/><br/><br/>
+    {% endif %}
+
+    <form action="submit" method="post">
+        {% csrf_token %}
+        <input type="submit" name="update" value="Update Data"/>
+    </form>
+
+{% endblock %}
