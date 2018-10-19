@@ -25,7 +25,7 @@ from scorecard.models import Product, ProductSecurityCapability, SecurityCapabil
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'name', 'total_score', 'max_total_score', 'total_percent_score')
+        fields = ('id', 'name', 'published', 'pp_id')
 
 
 class ProductSecurityCapabilitySerializer(serializers.ModelSerializer):
@@ -51,7 +51,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (filters.SearchFilter,)
-    filter_fields = ('name', 'total_score', 'max_total_score', 'total_percent_score')
+    filter_fields = ('id', 'name', 'published', 'pp_id')
     search_fields = ('name',)
 
 
@@ -101,7 +101,7 @@ urlpatterns = [
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.
 
-    url(r'^', include(router.urls)),
+    url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
