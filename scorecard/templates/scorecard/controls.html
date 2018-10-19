@@ -5,19 +5,19 @@
 {% block body %}
 
 <h3><a href="/businessunitsview">Business Units</a> >
-    <a href="/productsview?bu={{ product.business_unit.id }}">{{ product.business_unit.name }}</a> >
-    {{ product.name }} (score: {{ product.total_score }} / {{ product.max_total_score }})</h3>
+    <a href="/productsview?bu={{ product_score.product.business_unit.id }}">
+        {{ product_score.product.business_unit.name }}</a> >
+    {{ product_score.product.name }} (score: {{ product_score.score }} / {{ product_score.max_score }})</h3>
 
-    <button class="peoplebutton">People {{ product.people_percent_score }}%</button>
-    <button class="processbutton">Process {{ product.process_percent_score }}%</button>
-    <button class="techbutton">Technology {{ product.technology_percent_score }}%</button>
-    <button class="NISTbutton">Compliance {{ product.compliance_percent_score }}%</button>
+    <button class="processbutton">Process {{ proc.percent }}%</button>
+    <button class="techbutton">Technology {{ tech.percent }}%</button>
+    <button class="NISTbutton">Compliance {{ comp.percent }}%</button>
 
-    <div class="people">
+    <div class="process">
         {% if product_roles_list.count > 0 %}
             <br><br>
             <table>
-                <tr><th>Description</th><th>Function</th><th>Contact</th><th>E-Mail</th></tr>
+                <tr><th>Security Role</th><th>Function</th><th>Contact</th><th>E-Mail</th></tr>
                 {% for product_role in product_roles_list %}
                     {% if product_role.person == None %}
                         <tr class="none">
@@ -46,22 +46,22 @@
     </div>
 
     <div class="technology">
-        {% if security_capability_product_list.count > 0 %}
+        {% if product_security_capability_list.count > 0 %}
             <br><br>
             <table>
                 <tr><th>Security Capability</th><th>Status</th><th>Score</th></tr>
-                {% for security_capability_product in security_capability_product_list %}
-                    <tr class="{{ security_capability_product.status.name }}">
-                        <td>{{ security_capability_product.security_capability.name }}
-                            {% if security_capability_product.security_capability.supporting_controls|length > 0 %}
+                {% for product_security_capability in product_security_capability_list %}
+                    <tr class="{{ product_security_capability.status.name }}">
+                        <td>{{ product_security_capability.security_capability.name }}
+                            {% if product_security_capability.security_capability.supporting_controls|length > 0 %}
                             <br>
                             <div class="supcon">
-                                {{ security_capability_product.security_capability.supporting_controls }}
+                                {{ product_security_capability.security_capability.supporting_controls }}
                             </div>
                             {% endif %}
                         </td>
-                        <td>{{ security_capability_product.status.name }}</td>
-                        <td>{{ security_capability_product.status.value }}</td>
+                        <td>{{ product_security_capability.status.name }}</td>
+                        <td>{{ product_security_capability.status.value }}</td>
                     </tr>
                 {% endfor %}
             </table>
@@ -71,19 +71,21 @@
     </div>
 
     <div class="NIST">
-        <br><br>
-        <table>
-            <tr><th>Standard</th><th>Family</th><th>Control</th><th>Status</th><th>Score</th></tr>
-            {% for product_control in product_control_list %}
-                <tr class="{{ product_control.status }}">
-                    <td>{{ product_control.control.standard.name }} ({{ product_control.control.standard.label }})</td>
-                    <td>{{ product_control.control.family.label }}</td>
-                    <td>{{ product_control.control.name }}</td>
-                    <td>{{ product_control.status }}</td>
-                    <td>{{ control_status_values|get_item:product_control.status }}</td>
-                </tr>
-            {% endfor %}
-        </table>
+        {% if product_control_list.count > 0 %}
+            <br><br>
+            <table>
+                <tr><th>Standard</th><th>Family</th><th>Control</th><th>Status</th><th>Score</th></tr>
+                {% for product_control in product_control_list %}
+                    <tr class="{{ product_control.status }}">
+                        <td>{{ product_control.control.standard.name }} ({{ product_control.control.standard.label }})</td>
+                        <td>{{ product_control.control.family.label }}</td>
+                        <td>{{ product_control.control.name }}</td>
+                        <td>{{ product_control.status }}</td>
+                        <td>{{ control_status_values|get_item:product_control.status }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
     </div>
 
 {% endblock %}

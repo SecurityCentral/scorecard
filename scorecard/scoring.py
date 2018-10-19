@@ -1,7 +1,6 @@
 from django.db.models import Q
-from .models import BusinessUnit, Product, ProductControl, ProductSecurityCapability, ProductSecurityRole, \
-    SecurityCapability, SecurityRole, Status
-
+from .models import BusinessUnit, BUScore, Product, ProductControl, ProductSecurityCapability, ProductSecurityRole, \
+    ProductScore, SecurityCapability, SecurityRole, Status
 
 '''
     Executes all scoring related functionality.
@@ -19,24 +18,23 @@ def get_control_status_values():
     return {'Implemented': 3, 'complete': 3, 'partial': 2, 'planned': 1, 'none': 0, 'unknown': 0}
 
 
-def get_product_scores(product):
+def calculate_process_score(product):
 
-    # Calculate People score.
-    people_score = 0
+    process_score = 0
     security_roles = SecurityRole.objects.all()
-    max_people_score = len(security_roles) # 1 point for each security role.
+    max_process_score = len(security_roles)  # 1 point for each security role.
     prod_sec_roles = ProductSecurityRole.objects.filter(product=product)
     for security_role in security_roles:
         for prod_sec_role in prod_sec_roles:
             if prod_sec_role.role == security_role and prod_sec_role.person is not None:
-                people_score += 1
+                process_score += 1
                 break
 
-    # Calculate Process score.
-    process_score = 0
-    max_process_score = 1
+    return process_score, max_process_score
 
-    # Calculate Technology score.
+
+def calculate_technology_score(product):
+
     technology_score = 0
     security_capabilities = SecurityCapability.objects.all()
     product_security_capabilities = ProductSecurityCapability.objects.filter(Q(product=product) & ~Q(status__value=-1))
@@ -44,7 +42,11 @@ def get_product_scores(product):
     for product_security_capability in product_security_capabilities:
         technology_score += product_security_capability.status.value
 
-    # Calculate Compliance score.
+    return technology_score, max_technology_score
+
+
+def calculate_compliance_score(product):
+
     compliance_score = 0
     status_values = get_control_status_values()
     # Get the product controls, but filter out all those with a status of 'not applicable'.
@@ -58,58 +60,58 @@ def get_product_scores(product):
         except KeyError:
             print(">>>> ERROR: Unknown product control status: '%s'" % product_control.status)
 
-    return {'people_score':         people_score,
-            'max_people_score':     max_people_score,
-            'process_score':        process_score,
-            'max_process_score':    max_process_score,
-            'technology_score':     technology_score,
-            'max_technology_score': max_technology_score,
-            'compliance_score':     compliance_score,
-            'max_compliance_score': max_compliance_score}
-
-
-def update_all_product_scores():
-    products = Product.objects.all()
-    for product in products:
-        update_product_score(product)
+    return compliance_score, max_compliance_score
 
 
 def update_product_score(product):
-    scores = get_product_scores(product)
-    product.people_score = scores['people_score']
-    product.max_people_score = scores['max_people_score']
-    product.people_percent_score = round(product.people_score * 100 / product.max_people_score, 1)
-    product.process_score = scores['process_score']
-    product.max_process_score = scores['max_process_score']
-    product.process_percent_score = round(product.process_score * 100 / product.max_process_score, 1)
-    product.technology_score = scores['technology_score']
-    product.max_technology_score = scores['max_technology_score']
-    product.technology_percent_score = round(product.technology_score * 100 / product.max_technology_score, 1)
-    product.compliance_score = scores['compliance_score']
-    product.max_compliance_score = scores['max_compliance_score']
-    product.compliance_percent_score = round(product.compliance_score * 100 / product.max_compliance_score, 1)
-    product.total_score = product.people_score + product.process_score + product.technology_score + \
-        product.compliance_score
-    product.max_total_score = product.max_people_score + product.max_process_score + product.max_technology_score + \
-        product.max_compliance_score
-    product.total_percent_score = round(product.total_score * 100 / product.max_total_score, 1)
-    product.save()
+
+    categories = ['process', 'technology', 'compliance']
+
+    total_score = 0
+    total_max_score = 0
+
+    for category in categories:
+        score = 0
+        max_score = 1
+        if category is 'process':
+            score, max_score = calculate_process_score(product)
+        if category is 'technology':
+            score, max_score = calculate_technology_score(product)
+        if category is 'compliance':
+            score, max_score = calculate_compliance_score(product)
+        total_score += score
+        total_max_score += max_score
+        prod_score, _ = ProductScore.objects.get_or_create(product=product, category=category)
+        prod_score.score = score
+        prod_score.max_score = max_score
+        prod_score.save()
+
+    prod_score, _ = ProductScore.objects.get_or_create(product=product, category='total')
+    prod_score.score = total_score
+    prod_score.max_score = total_max_score
+    prod_score.save()
+
+
+def update_all_product_scores():
+    products = Product.objects.filter(published=True)
+    for product in products:
+        update_product_score(product)
 
 
 def update_business_unit_scores():
     business_units = BusinessUnit.objects.all()
     for business_unit in business_units:
+        bu_score, _ = BUScore.objects.get_or_create(bu=business_unit)
         score = 0
         max_score = 0
-        products = Product.objects.filter(business_unit=business_unit)
-        for product in products:
-            score += product.total_score
-            max_score += product.max_total_score
-        percent_score = round(score * 100 / max_score, 1)
-        business_unit.score = score
-        business_unit.max_score = max_score
-        business_unit.percent_score = percent_score
-        business_unit.save()
+        prod_scores = ProductScore.objects.filter(product__business_unit=business_unit, category='total',
+                                                  product__published=True)
+        for prod_score in prod_scores:
+            score += prod_score.score
+            max_score += prod_score.max_score
+        bu_score.score = score
+        bu_score.max_score = max_score
+        bu_score.save()
 
 
 def get_max_status_value():

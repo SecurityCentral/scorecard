@@ -3,7 +3,7 @@ deSelectedButtonColor = "black"
 
 $(document).ready(function() {
     $("body").css("overflow", "auto");
-    $(".peoplebutton").click();
+    $(".processbutton").click();
 });
 
 $(".techbutton").click(function() {
@@ -22,23 +22,16 @@ $(".NISTbutton").click(function() {
 
 $(".processbutton").click(function() {
     hideAll();
+    $(".process").show();
     $(".processbutton").css("color", selectedButtonColor);
     $(".processbutton").blur();
 });
 
-$(".peoplebutton").click(function() {
-    hideAll();
-    $(".people").show();
-    $(".peoplebutton").css("color", selectedButtonColor);
-    $(".peoplebutton").blur();
-});
-
 function hideAll() {
     $(".NIST").hide();
-    $(".people").hide();
+    $(".process").hide();
     $(".technology").hide();
     $(".techbutton").css({"color": deSelectedButtonColor});
     $(".NISTbutton").css("color", deSelectedButtonColor);
     $(".processbutton").css("color", deSelectedButtonColor);
-    $(".peoplebutton").css("color", deSelectedButtonColor);
 }

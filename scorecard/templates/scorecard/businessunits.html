@@ -6,18 +6,18 @@
 
     <h3>Business Units</h3>
 
-    {% if bu_group_list.count > 0 %}
+    {% if bu_group_list|length > 0 %}
         <table>
             {% for bu_group in bu_group_list %}
                 <tr>
                     <td class="bugroup">
                         {{ bu_group.name }}
-                        {% for bu in bu_list %}
+                        {% for bu_score in bu_score_list %}
                             <ul>
-                                {% if bu.bu_group.id == bu_group.id %}
+                                {% if bu_score.bu.bu_group.id == bu_group.id %}
                                     <li>
-                                        <a href="/productsview?bu={{ bu.id }}">{{ bu.name }}</a>
-                                        {{ bu.score }}/{{ bu.max_score }} ({{ bu.percent_score}}%)
+                                        <a href="/productsview?bu={{ bu_score.bu.id }}">{{ bu_score.bu.name }}</a>
+                                        {{ bu_score.score }}/{{ bu_score.max_score }} ({{ bu_score.percent}}%)
                                     </li>
                                 {% endif %}
                             </ul>
