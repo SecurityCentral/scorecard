@@ -16,23 +16,31 @@ def businessunitsview(request):
 
 
 def controlsview(request):
-    product = Product.objects.get(id=request.GET.get('product'))
-    product_control_list = ProductControl.objects.filter(Q(product=product) & ~Q(status="not applicable")).\
+    product_score = ProductScore.objects.get(product__id=request.GET.get('product'), category='total')
+    proc = ProductScore.objects.get(product__id=request.GET.get('product'), category='process')
+    tech = ProductScore.objects.get(product__id=request.GET.get('product'), category='technology')
+    comp = ProductScore.objects.get(product__id=request.GET.get('product'), category='compliance')
+    product_control_list = ProductControl.objects.filter(Q(product=product_score.product) &
+                                                         ~Q(status="not applicable")).\
         order_by('control__family__label', 'control__name')
-    security_capability_product_list = ProductSecurityCapability.objects.filter(Q(product=product) &
+    product_security_capability_list = ProductSecurityCapability.objects.filter(Q(product=product_score.product) &
                                                                                 ~Q(status__name='not applicable')).\
         order_by('security_capability__name')
-    product_roles_list = ProductSecurityRole.objects.filter(Q(product=product)).order_by('role__description')
+    product_roles_list = ProductSecurityRole.objects.filter(Q(product=product_score.product)).\
+        order_by('role__description')
 
     @register.filter
     def get_item(dictionary, key):
         return dictionary.get(key)
 
     return render(request, 'scorecard/controls.html',
-                  {'product': product,
+                  {'product_score': product_score,
+                   'proc': proc,
+                   'tech': tech,
+                   'comp': comp,
                    'product_control_list': product_control_list,
                    'control_status_values': scoring.get_control_status_values(),
-                   'security_capability_product_list': security_capability_product_list,
+                   'product_security_capability_list': product_security_capability_list,
                    'product_roles_list': product_roles_list})
 
 
