@@ -2,15 +2,17 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.shortcuts import render
 from django.template.defaulttags import register
-from .models import BusinessUnit, BusinessUnitGroup, Product, ProductControl, ProductSecurityRole, \
-    ProductSecurityCapability
+from .models import BusinessUnit, BUScore, BusinessUnitGroup, Product, ProductControl, ProductScore, \
+    ProductSecurityRole, ProductSecurityCapability
 from scorecard import product_pages, scoring
 
 
 def businessunitsview(request):
     bu_group_list = BusinessUnitGroup.objects.all().order_by('name')
-    bu_list = BusinessUnit.objects.all().order_by('name')
-    return render(request, 'scorecard/businessunits.html', {'bu_group_list': bu_group_list, 'bu_list': bu_list})
+    # bu_list = BusinessUnit.objects.all().order_by('name')
+    bu_score_list = BUScore.objects.all().order_by('bu__name')
+    return render(request, 'scorecard/businessunits.html', {'bu_group_list': bu_group_list,
+                                                            'bu_score_list': bu_score_list})
 
 
 def controlsview(request):
@@ -40,8 +42,8 @@ def health(request):
 
 def productsview(request):
     business_unit = BusinessUnit.objects.get(id=request.GET.get("bu"))
-    product_list = Product.objects.filter(Q(business_unit=business_unit))
-    return render(request, 'scorecard/products.html', {'product_list': product_list, 'bu': business_unit})
+    product_score_list = ProductScore.objects.filter(product__business_unit=business_unit, category='total')
+    return render(request, 'scorecard/products.html', {'product_score_list': product_score_list, 'bu': business_unit})
 
 
 def submit(request):

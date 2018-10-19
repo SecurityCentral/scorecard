@@ -7,9 +7,10 @@ from scorecard import scoring
     Acquires all business unit and product data via the Product Pages API.
 '''
 
-PRODUCT_PAGES_API = 'https://pp.engineering.redhat.com/pp/api/latest'
-BUSINESS_UNITS_API = PRODUCT_PAGES_API + '/bugroups/'
-PRODUCTS_API = PRODUCT_PAGES_API + '/products/'
+PRODUCT_PAGES_API = 'https://pp.engineering.redhat.com/pp/api/latest/'
+BUSINESS_UNITS_API = PRODUCT_PAGES_API + 'bugroups/'
+PEOPLE_PARTIAL_API = '/people/?fields=id,description__name,function__name,user_full_name,user_email,username'
+PRODUCTS_API = PRODUCT_PAGES_API + 'products/?fields=id,bu,name'
 SECURITY_CHAMPION = "Security Escalation Contact"
 PROGRAM_MANAGER = "Program Manager"
 PRODUCT_SECURITY = "Product Security"
@@ -21,7 +22,6 @@ TRUSTED_CAS = './scorecard/static/scorecard/ca-bundle.trust.crt'
 def update_product_data():
 
     # Get all the business unit data and create or update accordingly.
-
     bu_groups = requests.get(BUSINESS_UNITS_API, headers=dict(Accept='application/json'), verify=TRUSTED_CAS).json()
     for bu_group in bu_groups:
         updated_bu_group, _ = BusinessUnitGroup.objects.get_or_create(pp_id=bu_group['id'])
@@ -46,7 +46,7 @@ def update_product_data():
         updated_product.save()
 
         # For each product, get all the associated people.
-        people = requests.get(PRODUCTS_API + str(updated_product.pp_id) + '/people/',
+        people = requests.get(PRODUCT_PAGES_API + 'products/' + str(updated_product.pp_id) + PEOPLE_PARTIAL_API,
                               headers=dict(Accept='application/json'), verify=TRUSTED_CAS).json()
 
         security_roles = SecurityRole.objects.all()
@@ -82,8 +82,13 @@ def update_product_data():
                                                                                 product=updated_product,
                                                                                 person=updated_person)
 
-            # If the product doesn't have a security role, report it.
+                    # Since a person in the role was found, delete any previous "missing role" records.
+                    ProductSecurityRole.objects.filter(role=security_role, product=updated_product,
+                                                       person=None).delete()
+
+            # If the product doesn't have a security role, report it and delete anyone previously listed in the role.
             if not role_found:
+                ProductSecurityRole.objects.filter(role=security_role, product=updated_product).delete()
                 product_role, _ = ProductSecurityRole.objects.get_or_create(role=security_role,
                                                                             product=updated_product, person=None)
 
