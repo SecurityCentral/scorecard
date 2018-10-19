@@ -6,7 +6,7 @@
 
     <h3>Business Units</h3>
 
-    {% if bu_group_list.count > 0 %}
+    {% if bu_group_list|length > 0 %}
         <table>
             {% for bu_group in bu_group_list %}
                 <tr>

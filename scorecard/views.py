@@ -8,9 +8,17 @@ from scorecard import product_pages, scoring
 
 
 def businessunitsview(request):
-    bu_group_list = BusinessUnitGroup.objects.all().order_by('name')
-    # bu_list = BusinessUnit.objects.all().order_by('name')
-    bu_score_list = BUScore.objects.all().order_by('bu__name')
+    bu_group_set = set()
+    bu_score_set = set()
+    product_list = Product.objects.filter(published=True)
+    all_bu_scores = BUScore.objects.all().order_by('bu__name')
+    for product in product_list:
+        bu_group_set.add(product.business_unit.bu_group)
+        for bu_score in all_bu_scores:
+            if product.business_unit == bu_score.bu:
+                bu_score_set.add(bu_score)
+    bu_group_list = list(bu_group_set)
+    bu_score_list = list(bu_score_set)
     return render(request, 'scorecard/businessunits.html', {'bu_group_list': bu_group_list,
                                                             'bu_score_list': bu_score_list})
 
@@ -50,7 +58,8 @@ def health(request):
 
 def productsview(request):
     business_unit = BusinessUnit.objects.get(id=request.GET.get("bu"))
-    product_score_list = ProductScore.objects.filter(product__business_unit=business_unit, category='total')
+    product_score_list = ProductScore.objects.filter(product__business_unit=business_unit, category='total',
+                                                     product__published=True)
     return render(request, 'scorecard/products.html', {'product_score_list': product_score_list, 'bu': business_unit})
 
 

@@ -18,6 +18,8 @@ class BUScore(models.Model):
     bu = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, null=True)
 
     def percent(self):
+        if self.max_score < 1:
+            self.max_score = 1
         return round(self.score * 100 / self.max_score, 1)
 
 
@@ -31,6 +33,7 @@ class Person(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     business_unit = models.ForeignKey(BusinessUnit, on_delete=models.SET(None), null=True)
+    published = models.BooleanField(default=False)
     pp_id = models.IntegerField(default=0)
 
 

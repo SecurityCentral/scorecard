@@ -93,7 +93,7 @@ def update_product_score(product):
 
 
 def update_all_product_scores():
-    products = Product.objects.all()
+    products = Product.objects.filter(published=True)
     for product in products:
         update_product_score(product)
 
@@ -104,7 +104,8 @@ def update_business_unit_scores():
         bu_score, _ = BUScore.objects.get_or_create(bu=business_unit)
         score = 0
         max_score = 0
-        prod_scores = ProductScore.objects.filter(product__business_unit=business_unit, category='total')
+        prod_scores = ProductScore.objects.filter(product__business_unit=business_unit, category='total',
+                                                  product__published=True)
         for prod_score in prod_scores:
             score += prod_score.score
             max_score += prod_score.max_score

@@ -28,7 +28,7 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'business_unit', 'pp_id')
+    list_display = ('name', 'business_unit', 'published', 'pp_id')
 
 
 class ProductScoreAdmin(admin.ModelAdmin):
