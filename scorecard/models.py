@@ -58,9 +58,20 @@ class ProductSecurityRole(models.Model):
     person = models.ForeignKey(Person, on_delete=models.SET(None), null=True)
 
 
+class SecurityCategory(models.Model):
+    name = models.CharField(max_length=100, default='')
+
+
+class SecuritySubCategory(models.Model):
+    name = models.CharField(max_length=100, default='')
+
+
 class SecurityCapability(models.Model):
     name = models.CharField(max_length=200, default='')
     supporting_controls = models.CharField(max_length=200, blank=True)
+    details = models.TextField(default='', blank=True)
+    category = models.ForeignKey(SecurityCategory, on_delete=models.SET(''), null=True)
+    sub_category = models.ForeignKey(SecuritySubCategory, on_delete=models.SET(''), null=True)
 
 
 class Status(models.Model):
