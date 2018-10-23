@@ -16,65 +16,97 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from django_filters import rest_framework
 from rest_framework import routers, serializers, viewsets, filters
-from scorecard.views import businessunitsview, controlsview, health, productsview, submit
-from scorecard.models import Product, ProductSecurityCapability, SecurityCapability, Status
+from scorecard.views import businessunitsview, proddetailsview, health, productsview, submit
+from scorecard.models import Product, ProductSecurityCapability, SecurityCapability, SecurityCategory, \
+    SecuritySubCategory, Status
 
 
 # Serializers define the API representation.
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'name', 'total_score', 'max_total_score', 'total_percent_score')
+        fields = '__all__'
 
 
 class ProductSecurityCapabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductSecurityCapability
-        fields = ('id', 'product', 'security_capability', 'status')
+        fields = '__all__'
 
 
-class SecurityCapabilitySerializer(serializers.HyperlinkedModelSerializer):
+class SecurityCapabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = SecurityCapability
-        fields = ('id', 'name', 'supporting_controls')
+        fields = '__all__'
 
 
-class StatusSerializer(serializers.HyperlinkedModelSerializer):
+class SecurityCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecurityCategory
+        fields = '__all__'
+
+
+class SecuritySubCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecuritySubCategory
+        fields = '__all__'
+
+
+class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
-        fields = ('id', 'name', 'value')
+        fields = '__all__'
 
 
 # ViewSets define the view behavior.
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_backends = (filters.SearchFilter,)
-    filter_fields = ('name', 'total_score', 'max_total_score', 'total_percent_score')
-    search_fields = ('name',)
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('id', 'name', 'published')
+    search_fields = ('name', 'published')
+    http_method_names = ['get', 'delete']
 
 
 class ProductSecurityCapabilityViewSet(viewsets.ModelViewSet):
     queryset = ProductSecurityCapability.objects.all()
     serializer_class = ProductSecurityCapabilitySerializer
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
     search_fields = ('product__name', 'security_capability__name', 'security_capability__supporting_controls',
                      'status__name')
+    filter_fields = ('product', 'details')
 
 
 class SecurityCapabilityViewSet(viewsets.ModelViewSet):
     queryset = SecurityCapability.objects.all()
     serializer_class = SecurityCapabilitySerializer
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
     filter_fields = ('name', 'supporting_controls')
     search_fields = ('name', 'supporting_controls')
+
+
+class SecurityCategoryViewSet(viewsets.ModelViewSet):
+    queryset = SecurityCategory.objects.all()
+    serializer_class = SecurityCategorySerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('name',)
+    search_fields = ('name',)
+
+
+class SecuritySubCategoryViewSet(viewsets.ModelViewSet):
+    queryset = SecuritySubCategory.objects.all()
+    serializer_class = SecuritySubCategorySerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('name',)
+    search_fields = ('name',)
 
 
 class StatusViewSet(viewsets.ModelViewSet):
     queryset = Status.objects.all()
     serializer_class = StatusSerializer
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
     filter_fields = ('name', 'value')
     search_fields = ('name',)
 
@@ -84,6 +116,8 @@ router = routers.DefaultRouter()
 router.register(r'products', ProductViewSet)
 router.register(r'productsecuritycapabilities', ProductSecurityCapabilityViewSet)
 router.register(r'securitycapabilities', SecurityCapabilityViewSet)
+router.register(r'securitycategories', SecurityCategoryViewSet)
+router.register(r'securitysubcategories', SecuritySubCategoryViewSet)
 router.register(r'statuses', StatusViewSet)
 
 urlpatterns = [
@@ -93,7 +127,7 @@ urlpatterns = [
 
     url(r'^admin/', admin.site.urls),
     url(r'^businessunitsview', businessunitsview),
-    url(r'^controlsview', controlsview),
+    url(r'^proddetailsview', proddetailsview),
     url(r'^health$', health),
     url(r'^productsview/', productsview),
     url(r'^submit', submit),
@@ -101,7 +135,7 @@ urlpatterns = [
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.
 
-    url(r'^', include(router.urls)),
+    url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 

@@ -3,7 +3,7 @@ deSelectedButtonColor = "black"
 
 $(document).ready(function() {
     $("body").css("overflow", "auto");
-    $(".processbutton").click();
+    $(".procbutton").click();
 });
 
 $(".techbutton").click(function() {
@@ -13,25 +13,25 @@ $(".techbutton").click(function() {
     $(".techbutton").blur();
 });
 
-$(".NISTbutton").click(function() {
+$(".compbutton").click(function() {
     hideAll();
-    $(".NIST").show();
-    $(".NISTbutton").css("color", selectedButtonColor);
-    $(".NISTbutton").blur();
+    $(".compliance").show();
+    $(".compbutton").css("color", selectedButtonColor);
+    $(".compbutton").blur();
 });
 
-$(".processbutton").click(function() {
+$(".procbutton").click(function() {
     hideAll();
     $(".process").show();
-    $(".processbutton").css("color", selectedButtonColor);
-    $(".processbutton").blur();
+    $(".procbutton").css("color", selectedButtonColor);
+    $(".procbutton").blur();
 });
 
 function hideAll() {
-    $(".NIST").hide();
+    $(".compliance").hide();
     $(".process").hide();
     $(".technology").hide();
     $(".techbutton").css({"color": deSelectedButtonColor});
-    $(".NISTbutton").css("color", deSelectedButtonColor);
-    $(".processbutton").css("color", deSelectedButtonColor);
+    $(".compbutton").css("color", deSelectedButtonColor);
+    $(".procbutton").css("color", deSelectedButtonColor);
 }

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import BusinessUnit, BusinessUnitGroup, BUScore, Control, ControlFamily, Person, Product, ProductScore, \
-    ProductSecurityRole, ProductControl, ProductSecurityCapability, SecurityCapability, SecurityRole, Standard, Status
+    ProductSecurityRole, ProductControl, ProductSecurityCapability, SecurityCapability, SecurityCategory, \
+    SecuritySubCategory, SecurityRole, Standard, Status
 
 
 class BusinessUnitAdmin(admin.ModelAdmin):
@@ -44,11 +45,19 @@ class ProductControlAdmin(admin.ModelAdmin):
 
 
 class ProductSecurityCapabilityAdmin(admin.ModelAdmin):
-    list_display = ('status', 'product', 'security_capability')
+    list_display = ('status', 'product', 'security_capability', 'details')
 
 
 class SecurityCapabilityAdmin(admin.ModelAdmin):
-    list_display = ('name', 'supporting_controls')
+    list_display = ('name', 'supporting_controls', 'category', 'sub_category')
+
+
+class SecurityCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+class SecuritySubCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 class SecurityRoleAdmin(admin.ModelAdmin):
@@ -75,6 +84,8 @@ admin.site.register(ProductSecurityRole, ProductRoleAdmin)
 admin.site.register(ProductControl, ProductControlAdmin)
 admin.site.register(ProductSecurityCapability, ProductSecurityCapabilityAdmin)
 admin.site.register(SecurityCapability, SecurityCapabilityAdmin)
+admin.site.register(SecurityCategory, SecurityCategoryAdmin)
+admin.site.register(SecuritySubCategory, SecuritySubCategoryAdmin)
 admin.site.register(SecurityRole, SecurityRoleAdmin)
 admin.site.register(Standard, StandardAdmin)
 admin.site.register(Status, StatusAdmin)
