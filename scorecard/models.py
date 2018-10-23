@@ -69,9 +69,8 @@ class SecuritySubCategory(models.Model):
 class SecurityCapability(models.Model):
     name = models.CharField(max_length=200, default='')
     supporting_controls = models.CharField(max_length=200, blank=True)
-    details = models.TextField(default='', blank=True)
-    category = models.ForeignKey(SecurityCategory, on_delete=models.SET(''), null=True)
-    sub_category = models.ForeignKey(SecuritySubCategory, on_delete=models.SET(''), null=True)
+    category = models.ForeignKey(SecurityCategory, on_delete=models.SET(''), null=True, blank=True)
+    sub_category = models.ForeignKey(SecuritySubCategory, on_delete=models.SET(''), null=True, blank=True)
 
 
 class Status(models.Model):
@@ -83,6 +82,7 @@ class ProductSecurityCapability(models.Model):
     status = models.ForeignKey(Status, null=True, on_delete=models.SET(''))
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     security_capability = models.ForeignKey(SecurityCapability, on_delete=models.CASCADE)
+    details = models.TextField(default='', blank=True)
 
 
 # OpenControl data

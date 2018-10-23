@@ -45,11 +45,11 @@ class ProductControlAdmin(admin.ModelAdmin):
 
 
 class ProductSecurityCapabilityAdmin(admin.ModelAdmin):
-    list_display = ('status', 'product', 'security_capability')
+    list_display = ('status', 'product', 'security_capability', 'details')
 
 
 class SecurityCapabilityAdmin(admin.ModelAdmin):
-    list_display = ('name', 'supporting_controls')
+    list_display = ('name', 'supporting_controls', 'category', 'sub_category')
 
 
 class SecurityCategoryAdmin(admin.ModelAdmin):
