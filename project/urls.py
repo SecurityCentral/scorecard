@@ -19,11 +19,47 @@ from django.contrib import admin
 from django_filters import rest_framework
 from rest_framework import routers, serializers, viewsets, filters
 from scorecard.views import businessunitsview, proddetailsview, health, productsview, submit
-from scorecard.models import Product, ProductSecurityCapability, SecurityCapability, SecurityCategory, \
-    SecuritySubCategory, Status
+from scorecard.models import BusinessUnit, BusinessUnitGroup, BUScore, Product, ProductSecurityCapability, Person, \
+    ProductScore, ProductSecurityRole, SecurityCapability, SecurityCategory, SecurityRole, SecuritySubCategory, Status
 
 
 # Serializers define the API representation.
+class BusinessUnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BusinessUnit
+        fields = '__all__'
+
+
+class BusinessUnitGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BusinessUnitGroup
+        fields = '__all__'
+
+
+class BUScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BUScore
+        fields = '__all__'
+
+
+class PersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Person
+        fields = '__all__'
+
+
+class ProductScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductScore
+        fields = '__all__'
+
+
+class ProductSecurityRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSecurityRole
+        fields = '__all__'
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -48,6 +84,12 @@ class SecurityCategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SecurityRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecurityRole
+        fields = '__all__'
+
+
 class SecuritySubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SecuritySubCategory
@@ -61,12 +103,56 @@ class StatusSerializer(serializers.ModelSerializer):
 
 
 # ViewSets define the view behavior.
+class BusinessUnitViewSet(viewsets.ModelViewSet):
+    queryset = BusinessUnit.objects.all()
+    serializer_class = BusinessUnitSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('id', 'name', 'bu_group', 'pp_id')
+    search_fields = ('name',)
+    http_method_names = ['get', 'delete']
+
+
+class BusinessUnitGroupViewSet(viewsets.ModelViewSet):
+    queryset = BusinessUnitGroup.objects.all()
+    serializer_class = BusinessUnitGroupSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('id', 'name', 'pp_id')
+    search_fields = ('name',)
+    http_method_names = ['get', 'delete']
+
+
+class BUScoreViewSet(viewsets.ModelViewSet):
+    queryset = BUScore.objects.all()
+    serializer_class = BUScoreSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('id', 'score', 'max_score', 'bu')
+    http_method_names = ['get', 'delete']
+
+
+class PersonViewSet(viewsets.ModelViewSet):
+    queryset = Person.objects.all()
+    serializer_class = PersonSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('id', 'full_name', 'email', 'username', 'pp_id')
+    search_fields = ('full_name', 'email', 'username')
+    http_method_names = ['get', 'delete']
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
-    filter_fields = ('id', 'name', 'published')
+    filter_fields = ('id', 'name', 'published', 'pp_id')
     search_fields = ('name', 'published')
+    http_method_names = ['get', 'delete']
+
+
+class ProductScoreViewSet(viewsets.ModelViewSet):
+    queryset = ProductScore.objects.all()
+    serializer_class = ProductScoreSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('id', 'category', 'score', 'max_score', 'product')
+    search_fields = ('category',)
     http_method_names = ['get', 'delete']
 
 
@@ -77,6 +163,13 @@ class ProductSecurityCapabilityViewSet(viewsets.ModelViewSet):
     search_fields = ('product__name', 'security_capability__name', 'security_capability__supporting_controls',
                      'status__name')
     filter_fields = ('product', 'details')
+
+
+class ProductSecurityRoleViewSet(viewsets.ModelViewSet):
+    queryset = ProductSecurityRole.objects.all()
+    serializer_class = ProductSecurityRoleSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('role', 'product', 'person')
 
 
 class SecurityCapabilityViewSet(viewsets.ModelViewSet):
@@ -93,6 +186,14 @@ class SecurityCategoryViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
     filter_fields = ('name',)
     search_fields = ('name',)
+
+
+class SecurityRoleViewSet(viewsets.ModelViewSet):
+    queryset = SecurityRole.objects.all()
+    serializer_class = SecurityRoleSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('description', 'function')
+    search_fields = ('description', 'function')
 
 
 class SecuritySubCategoryViewSet(viewsets.ModelViewSet):
@@ -113,10 +214,17 @@ class StatusViewSet(viewsets.ModelViewSet):
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
+router.register(r'businessunits', BusinessUnitViewSet)
+router.register(r'businessunitgroups', BusinessUnitGroupViewSet)
+router.register(r'buscores', BUScoreViewSet)
+router.register(r'persons', PersonViewSet)
 router.register(r'products', ProductViewSet)
+router.register(r'productscores', ProductScoreViewSet)
 router.register(r'productsecuritycapabilities', ProductSecurityCapabilityViewSet)
+router.register(r'productsecurityroles', ProductSecurityRoleViewSet)
 router.register(r'securitycapabilities', SecurityCapabilityViewSet)
 router.register(r'securitycategories', SecurityCategoryViewSet)
+router.register(r'securityroles', SecurityRoleViewSet)
 router.register(r'securitysubcategories', SecuritySubCategoryViewSet)
 router.register(r'statuses', StatusViewSet)
 
