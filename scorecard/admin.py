@@ -45,7 +45,21 @@ class ProductControlAdmin(admin.ModelAdmin):
 
 
 class ProductSecurityCapabilityAdmin(admin.ModelAdmin):
-    list_display = ('status', 'product', 'security_capability', 'details')
+    list_display = ('id', 'status__name', 'product__name', 'security_capability__name',
+                    'security_capability__category', 'details')
+    list_filter = ('product__name', 'security_capability__category__name')
+
+    def status__name(self, obj):
+        return obj.status.name
+
+    def product__name(self, obj):
+        return obj.product.name
+
+    def security_capability__name(self, obj):
+        return obj.security_capability.name
+
+    def security_capability__category(selfs, obj):
+        return obj.security_capability.category.name
 
 
 class SecurityCapabilityAdmin(admin.ModelAdmin):
