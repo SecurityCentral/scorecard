@@ -61,9 +61,15 @@ class ProductSecurityRole(models.Model):
 class SecurityCategory(models.Model):
     name = models.CharField(max_length=100, default='')
 
+    class Meta:
+        verbose_name_plural = "security categories"
+
 
 class SecuritySubCategory(models.Model):
     name = models.CharField(max_length=100, default='')
+
+    class Meta:
+        verbose_name_plural = "security subcategories"
 
 
 class SecurityCapability(models.Model):
@@ -72,10 +78,16 @@ class SecurityCapability(models.Model):
     category = models.ForeignKey(SecurityCategory, on_delete=models.SET(''), null=True, blank=True)
     sub_category = models.ForeignKey(SecuritySubCategory, on_delete=models.SET(''), null=True, blank=True)
 
+    class Meta:
+        verbose_name_plural = "security capabilities"
+
 
 class Status(models.Model):
     name = models.CharField(max_length=50, default='')
     value = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name_plural = "statuses"
 
 
 class ProductSecurityCapability(models.Model):
@@ -83,6 +95,9 @@ class ProductSecurityCapability(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     security_capability = models.ForeignKey(SecurityCapability, on_delete=models.CASCADE)
     details = models.TextField(default='', blank=True)
+
+    class Meta:
+        verbose_name_plural = "product security capabilities"
 
 
 # OpenControl data
@@ -93,6 +108,9 @@ class Standard(models.Model):
 
 class ControlFamily(models.Model):
     label = models.CharField(max_length=10)
+
+    class Meta:
+        verbose_name_plural = "control families"
 
 
 class Control(models.Model):
