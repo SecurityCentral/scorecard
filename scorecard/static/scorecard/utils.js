@@ -1,23 +1,37 @@
+selectedButtonColor = "blue"
+deSelectedButtonColor = "black"
+
 $(document).ready(function() {
     $("body").css("overflow", "auto");
+    $(".procbutton").click();
 });
 
 $(".techbutton").click(function() {
-    $(".NIST").hide();
+    hideAll();
     $(".technology").show();
+    $(".techbutton").css("color", selectedButtonColor);
+    $(".techbutton").blur();
 });
 
-$(".NISTbutton").click(function() {
-    $(".NIST").show();
-    $(".technology").hide();
+$(".compbutton").click(function() {
+    hideAll();
+    $(".compliance").show();
+    $(".compbutton").css("color", selectedButtonColor);
+    $(".compbutton").blur();
 });
 
-$(".processbutton").click(function() {
-    $(".NIST").hide();
-    $(".technology").hide();
+$(".procbutton").click(function() {
+    hideAll();
+    $(".process").show();
+    $(".procbutton").css("color", selectedButtonColor);
+    $(".procbutton").blur();
 });
 
-$(".peoplebutton").click(function() {
-    $(".NIST").hide();
+function hideAll() {
+    $(".compliance").hide();
+    $(".process").hide();
     $(".technology").hide();
-});
+    $(".techbutton").css({"color": deSelectedButtonColor});
+    $(".compbutton").css("color", deSelectedButtonColor);
+    $(".procbutton").css("color", deSelectedButtonColor);
+}
