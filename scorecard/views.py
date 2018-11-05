@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template.defaulttags import register
-from .models import BusinessUnit, BUScore, Product, ProductControl, ProductScore, ProductSecurityRole, \
-    ProductSecurityCapability
+from rest_framework import views
+from scorecard import models
 from scorecard import product_pages, scoring
 
 NOT_APPLICABLE = "not applicable"
@@ -12,8 +12,8 @@ NOT_APPLICABLE = "not applicable"
 def businessunitsview(request):
     bu_group_set = set()
     bu_score_set = set()
-    product_list = Product.objects.filter(published=True)
-    all_bu_scores = BUScore.objects.all().order_by('bu__name')
+    product_list = models.Product.objects.filter(published=True).order_by('business_unit__bu_group__name')
+    all_bu_scores = models.BUScore.objects.all().order_by('bu__name')
     for product in product_list:
         bu_group_set.add(product.business_unit.bu_group)
         for bu_score in all_bu_scores:
@@ -26,19 +26,19 @@ def businessunitsview(request):
 
 
 def proddetailsview(request):
-    product_score = ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.TOTAL)
-    proc = ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.PROCESS.lower())
-    tech = ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.TECHNOLOGY.lower())
-    comp = ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.COMPLIANCE.lower())
+    product_score = models.ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.TOTAL)
+    proc = models.ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.PROCESS.lower())
+    tech = models.ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.TECHNOLOGY.lower())
+    comp = models.ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.COMPLIANCE.lower())
     proc_sub_categories_set = set()
     tech_sub_categories_set = set()
     comp_sub_categories_set = set()
 
-    product_control_list = ProductControl.objects.\
+    product_control_list = models.ProductControl.objects.\
         filter(Q(product=product_score.product) & ~Q(status=NOT_APPLICABLE)).\
         order_by('control__family__label', 'control__name')
 
-    proc_list = ProductSecurityCapability.objects.\
+    proc_list = models.ProductSecurityCapability.objects.\
         filter(Q(product=product_score.product) &
                Q(security_capability__category__name=scoring.PROCESS) & ~Q(status__name=NOT_APPLICABLE)).\
         order_by('security_capability__sub_category', 'security_capability__name')
@@ -46,7 +46,7 @@ def proddetailsview(request):
         proc_sub_categories_set.add(proc_item.security_capability.sub_category)
     proc_sub_categories_list = list(proc_sub_categories_set)
 
-    tech_list = ProductSecurityCapability.objects.\
+    tech_list = models.ProductSecurityCapability.objects.\
         filter(Q(product=product_score.product) &
                Q(security_capability__category__name=scoring.TECHNOLOGY) & ~Q(status__name=NOT_APPLICABLE)).\
         order_by('security_capability__sub_category', 'security_capability__name')
@@ -54,7 +54,7 @@ def proddetailsview(request):
         tech_sub_categories_set.add(tech_item.security_capability.sub_category)
     tech_sub_categories_list = list(tech_sub_categories_set)
 
-    comp_list = ProductSecurityCapability.objects.\
+    comp_list = models.ProductSecurityCapability.objects.\
         filter(Q(product=product_score.product) &
                Q(security_capability__category__name=scoring.COMPLIANCE) & ~Q(status__name=NOT_APPLICABLE)).\
         order_by('security_capability__sub_category', 'security_capability__name')
@@ -62,7 +62,7 @@ def proddetailsview(request):
         comp_sub_categories_set.add(comp_item.security_capability.sub_category)
     comp_sub_categories_list = list(comp_sub_categories_set)
 
-    product_roles_list = ProductSecurityRole.objects.filter(Q(product=product_score.product)).\
+    product_roles_list = models.ProductSecurityRole.objects.filter(Q(product=product_score.product)).\
         order_by('role__description')
 
     @register.filter
@@ -90,13 +90,24 @@ def health(request):
 
 
 def productsview(request):
-    business_unit = BusinessUnit.objects.get(id=request.GET.get('bu'))
-    product_score_list = ProductScore.objects.filter(product__business_unit=business_unit, category=scoring.TOTAL,
-                                                     product__published=True)
+    business_unit = models.BusinessUnit.objects.get(id=request.GET.get('bu'))
+    product_score_list = models.ProductScore.objects.filter(product__business_unit=business_unit,
+                                                            category=scoring.TOTAL, product__published=True)
     return render(request, 'scorecard/products.html', {'product_score_list': product_score_list, 'bu': business_unit})
 
 
 def submit(request):
     if 'update' in request.POST:
         product_pages.update_product_data()
-    return businessunitsview(request)
+    return redirect('/businessunitsview')
+
+
+class SyncProductPages(views.APIView):
+
+    def post(self, request):
+        """
+        Synchronizes product and business group data with Product Pages. Does not delete any data, only adds or
+        updates. Returns HTTP 200 if successful.
+        """
+        product_pages.update_product_data()
+        return HttpResponse(status=200)

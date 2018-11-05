@@ -124,4 +124,3 @@ class ProductControl(models.Model):
     status = models.CharField(max_length=20)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     control = models.ForeignKey(Control, on_delete=models.CASCADE)
-
