@@ -13,7 +13,7 @@ class BusinessUnit(models.Model):
 
 
 class BUScore(models.Model):
-    score = models.IntegerField(default=0)
+    score = models.IntegerField(default=0, help_text="Integer Field")
     max_score = models.IntegerField(default=1)
     bu = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, null=True)
 

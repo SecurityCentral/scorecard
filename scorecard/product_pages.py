@@ -25,16 +25,11 @@ def update_product_data():
     for bu_group in bu_groups:
         updated_bu_group, _ = models.BusinessUnitGroup.objects.update_or_create(pp_id=bu_group['id'],
                                                                                 defaults={'name': bu_group['name']})
-        # updated_bu_group.name = bu_group['name']
-        # updated_bu_group.save()
         business_units = bu_group['bus']
         for bu in business_units:
             updated_bu, _ = models.BusinessUnit.objects.update_or_create(pp_id=bu['id'],
                                                                          defaults={'name': bu['name'],
                                                                                    'bu_group': updated_bu_group})
-            # updated_bu.name = bu['name']
-            # updated_bu.bu_group = updated_bu_group
-            # updated_bu.save()
 
     # Get all the product data and create or update accordingly.
     products = requests.get(PRODUCTS_API, headers=dict(Accept='application/json'), verify=TRUSTED_CAS).json()
@@ -46,9 +41,6 @@ def update_product_data():
                                                                      defaults={'name': product['name'],
                                                                                'business_unit': models.BusinessUnit.
                                                                      objects.filter(pp_id=product['bu'])[0]})
-        # updated_product.name = product['name']
-        # updated_product.business_unit = models.BusinessUnit.objects.filter(pp_id=product['bu'])[0]
-        # updated_product.save()
 
         # For each product, get all the associated people.
         people = requests.get(PRODUCT_PAGES_API + 'products/' + str(updated_product.pp_id) + PEOPLE_PARTIAL_API,
@@ -84,10 +76,6 @@ def update_product_data():
                                                                                          'email': person['user_email'],
                                                                                          'username':
                                                                                              person['username']})
-                    # updated_person.full_name = person['user_full_name']
-                    # updated_person.email = person['user_email']
-                    # updated_person.username = person['username']
-                    # updated_person.save()
                     product_role, _ = models.ProductSecurityRole.objects.get_or_create(role=security_role,
                                                                                        product=updated_product,
                                                                                        person=updated_person)
