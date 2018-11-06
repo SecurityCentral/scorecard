@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
-from rest_framework.documentation import include_docs_urls
+from rest_framework_swagger.views import get_swagger_view
 from scorecard import api_viewsets
 from scorecard import views
 
@@ -38,6 +38,8 @@ router.register(r'securityroles', api_viewsets.SecurityRoleViewSet)
 router.register(r'securitysubcategories', api_viewsets.SecuritySubCategoryViewSet)
 router.register(r'statuses', api_viewsets.StatusViewSet)
 
+schema_view = get_swagger_view(title="Scorecard API")
+
 urlpatterns = [
     # Examples:
     # url(r'^$', 'project.views.home', name='home'),
@@ -51,7 +53,7 @@ urlpatterns = [
     url(r'^productsview', views.productsview),
     url(r'^api/syncproductpages', views.SyncProductPages.as_view()),
     url(r'^submit', views.submit),
-    url(r'^docs/', include_docs_urls(title='Product Scorecard API')),
+    url(r'^docs/', schema_view),
 
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.

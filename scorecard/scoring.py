@@ -105,16 +105,9 @@ def update_product_score(product):
         total_max_score += max_score
         prod_score, _ = models.ProductScore.objects.update_or_create(product=product, category=category.name.lower(),
                                                                      defaults={'score': score, 'max_score': max_score})
-        # prod_score.score = score
-        # prod_score.max_score = max_score
-        # prod_score.save()
-
     prod_score, _ = models.ProductScore.objects.update_or_create(product=product, category=TOTAL,
                                                                  defaults={'score': total_score,
                                                                            'max_score': total_max_score})
-    # prod_score.score = total_score
-    # prod_score.max_score = total_max_score
-    # prod_score.save()
 
 
 def update_all_product_scores():
@@ -136,9 +129,6 @@ def update_business_unit_scores():
 
         bu_score, _ = models.BUScore.objects.update_or_create(bu=business_unit,
                                                               defaults={'score': score, 'max_score': max_score})
-        # bu_score.score = score
-        # bu_score.max_score = max_score
-        # bu_score.save()
 
 
 def get_max_status_value():

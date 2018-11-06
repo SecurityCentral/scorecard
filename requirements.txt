@@ -17,3 +17,5 @@ django-filter==2.0.0
 djangorestframework-bulk==0.2.1
 coreapi
 pygments
+django-rest-swagger
+
