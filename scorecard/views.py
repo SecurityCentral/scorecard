@@ -1,5 +1,6 @@
-from django.http import HttpResponse
+import json
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template.defaulttags import register
 from rest_framework import views
@@ -107,7 +108,65 @@ class SyncProductPages(views.APIView):
     def post(self, request):
         """
         Synchronizes product and business group data with Product Pages. Does not delete any data, only adds or
-        updates. Returns HTTP 200 if successful.
+        updates. Following the sync, a complete recalculation of all product and business unit scores is executed.
         """
         product_pages.update_product_data()
         return HttpResponse(status=200)
+
+
+class RecalculateAllProductScores(views.APIView):
+
+    def post(self, request):
+        """
+        Recalculates the scores of all products and their respective business units.
+        """
+        scoring.recalculate_all_product_scores()
+        scoring.recalculate_all_business_unit_scores()
+        return HttpResponse(status=200)
+
+
+class RecalculateProductScores(views.APIView):
+
+    def post(self, request):
+        """
+        Recalculates the scores of the specified products and their respective business units.
+
+        The body of this request should contain a list of ids of products whose scores should be recalculated.
+
+        For example:
+
+        <code>[{"id": 12}, {"id": 9}, {"id": 33}]</code>
+
+        Returns a result of "success" if no issues were encountered. Example:
+
+        <code>{"result": "success"}</code>
+
+        Otherwise, returns "failure" along with a list of error messages. Example:
+
+        <code>{"result": "failure", "errors": ["Product with id '99' does not exist."]}</code>
+        """
+        errors = []
+        result_data = {}
+        product_set = set()
+        bu_set = set()
+        body = json.loads(request.body)
+        for product in body:
+            try:
+                product_set.add(models.Product.objects.get(pk=product['id']))
+            except models.Product.DoesNotExist:
+                errors.append("Product with id '%s' does not exist." % product["id"])
+        for product in product_set:
+            scoring.recalculate_product_score(product.pk)
+            bu_set.add(product.business_unit)
+        for bu_id in bu_set:
+            scoring.recalculate_business_unit_score(bu_id)
+
+        result_data['result'] = 'success'
+
+        if len(errors) > 0:
+            result_data['result'] = 'failure'
+            result_data['errors'] = []
+            for error in errors:
+                result_data['errors'].append(error)
+
+        return HttpResponse(json.dumps(result_data), content_type='application/json')

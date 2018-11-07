@@ -85,8 +85,9 @@ def calculate_compliance_score(product):
     return compliance_score, max_compliance_score
 
 
-def update_product_score(product):
+def recalculate_product_score(product_id):
 
+    product = models.Product.objects.get(id=product_id)
     categories = models.SecurityCategory.objects.all()
 
     total_score = 0
@@ -110,25 +111,29 @@ def update_product_score(product):
                                                                            'max_score': total_max_score})
 
 
-def update_all_product_scores():
+def recalculate_all_product_scores():
     products = models.Product.objects.filter(published=True)
     for product in products:
-        update_product_score(product)
+        recalculate_product_score(product.pk)
 
 
-def update_business_unit_scores():
+def recalculate_business_unit_score(bu_id):
+    score = 0
+    max_score = 0
+    prod_scores = models.ProductScore.objects.filter(product__business_unit=bu_id, category=TOTAL,
+                                                     product__published=True)
+
+    for prod_score in prod_scores:
+        score += prod_score.score
+        max_score += prod_score.max_score
+
+    bu_score, _ = models.BUScore.objects.update_or_create(bu=bu_id, defaults={'score': score, 'max_score': max_score})
+
+
+def recalculate_all_business_unit_scores():
     business_units = models.BusinessUnit.objects.all()
     for business_unit in business_units:
-        score = 0
-        max_score = 0
-        prod_scores = models.ProductScore.objects.filter(product__business_unit=business_unit, category=TOTAL,
-                                                         product__published=True)
-        for prod_score in prod_scores:
-            score += prod_score.score
-            max_score += prod_score.max_score
-
-        bu_score, _ = models.BUScore.objects.update_or_create(bu=business_unit,
-                                                              defaults={'score': score, 'max_score': max_score})
+        recalculate_business_unit_score(business_unit.pk)
 
 
 def get_max_status_value():
