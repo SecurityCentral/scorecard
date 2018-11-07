@@ -7,11 +7,21 @@
     <h3><a href="/businessunitsview">Business Units</a> > {{ bu.name }}</h3>
 
     <table>
-        <tr><th>Product</th><th>Score</th></tr>
+        <tr>
+            <th>Product</th><th>Score</th>
+            <th>Items Supported</th>
+            <th>Items in Progress</th>
+            <th>Items Not Supported</th>
+        </tr>
         {% for product_score in product_score_list %}
         <tr>
-            <td><a href="/proddetailsview?product={{ product_score.product.id }}">{{ product_score.product.name }}</a></td>
+            <td>
+                <a href="/proddetailsview?product={{ product_score.product.id }}">{{ product_score.product.name }}</a>
+            </td>
             <td>{{ product_score.score }}/{{ product_score.max_score }} ({{ product_score.percent }}%)</td>
+            <td>{{ product_score.items_supported }}</td>
+            <td>{{ product_score.items_in_progress }}</td>
+            <td>{{ product_score|get_unsupported_count }}</td>
         </tr>
         {% endfor %}
 

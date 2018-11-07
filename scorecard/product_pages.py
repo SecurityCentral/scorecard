@@ -98,6 +98,6 @@ def update_product_data():
                 updated_security_capability_product.status = none_status
                 updated_security_capability_product.save()
 
-        scoring.recalculate_product_score(updated_product.pk)
+        scoring.calculate_product_score(updated_product.pk)
 
-    scoring.recalculate_all_business_unit_scores()
+    scoring.calculate_all_business_unit_scores()
