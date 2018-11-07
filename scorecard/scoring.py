@@ -30,7 +30,9 @@ def calculate_category_score(product, category_name):
     security_capabilities = models.SecurityCapability.objects.filter(category__name=category_name)
     product_security_capabilities = models.ProductSecurityCapability.objects.\
         filter(Q(product=product) & Q(security_capability__category__name=category_name) & ~Q(status__value=-1))
-    items_total = len(security_capabilities)
+    product_security_capabilities_na = models.ProductSecurityCapability.objects.\
+        filter(Q(product=product) & Q(security_capability__category__name=category_name) & Q(status__value=-1))
+    items_total = len(security_capabilities) - len(product_security_capabilities_na)
 
     for product_security_capability in product_security_capabilities:
         process_score += product_security_capability.status.value
@@ -53,8 +55,6 @@ def calculate_category_score(product, category_name):
                     break
 
     max_process_score = items_total * get_max_status_value()
-
-    print(">>>>>>>>>>>>>>>> max process score for %s: %d" % (category_name, max_process_score))
 
     return process_score, max_process_score, items_supported, items_in_progress, items_total
 
