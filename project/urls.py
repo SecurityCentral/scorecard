@@ -45,15 +45,17 @@ urlpatterns = [
     # url(r'^$', 'project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^admin/', admin.site.urls),
     url(r'^$', views.businessunitsview),
-    url(r'^businessunitsview', views.businessunitsview),
-    url(r'^proddetailsview', views.proddetailsview),
-    url(r'^health', views.health),
-    url(r'^productsview', views.productsview),
+    url(r'^admin/', admin.site.urls),
     url(r'^api/syncproductpages', views.SyncProductPages.as_view()),
-    url(r'^submit', views.submit),
+    url(r'^api/recalculateallproductscores', views.RecalculateAllProductScores.as_view()),
+    url(r'^api/recalculateproductscores', views.RecalculateProductScores.as_view()),
+    url(r'^businessunitsview', views.businessunitsview),
     url(r'^docs/', schema_view),
+    url(r'^health', views.health),
+    url(r'^proddetailsview', views.proddetailsview),
+    url(r'^productsview', views.productsview),
+    url(r'^submit', views.submit),
 
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browsable API.
