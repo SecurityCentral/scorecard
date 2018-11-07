@@ -17,7 +17,10 @@
                                 {% if bu_score.bu.bu_group.id == bu_group.id %}
                                     <li>
                                         <a href="/productsview?bu={{ bu_score.bu.id }}">{{ bu_score.bu.name }}</a>
-                                        {{ bu_score.score }}/{{ bu_score.max_score }} ({{ bu_score.percent}}%)
+                                        {{ bu_score.score }}/{{ bu_score.max_score }} ({{ bu_score.percent}}%) |
+                                        Items Supported: {{ bu_score.items_supported }} |
+                                        Items in Progress: {{ bu_score.items_in_progress }} |
+                                        Items Not Supported: {{ bu_score|get_unsupported_count }}
                                     </li>
                                 {% endif %}
                             </ul>

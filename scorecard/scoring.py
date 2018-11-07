@@ -22,52 +22,60 @@ def get_control_status_values():
     return {'Implemented': 3, 'complete': 3, 'partial': 2, 'planned': 1, 'none': 0, 'unknown': 0}
 
 
-def calculate_process_score(product):
+def calculate_category_score(product, category_name):
 
     process_score = 0
-    security_roles = models.SecurityRole.objects.all()
-    security_capabilities = models.SecurityCapability.objects.filter(category__name=PROCESS)
+    items_supported = 0
+    items_in_progress = 0
+    security_capabilities = models.SecurityCapability.objects.filter(category__name=category_name)
     product_security_capabilities = models.ProductSecurityCapability.objects.\
-        filter(Q(product=product) & Q(security_capability__category__name=PROCESS) & ~Q(status__value=-1))
-    max_process_score = len(security_roles) + len(security_capabilities) * get_max_status_value()
-
-    prod_sec_roles = models.ProductSecurityRole.objects.filter(product=product)
-    for security_role in security_roles:
-        for prod_sec_role in prod_sec_roles:
-            if prod_sec_role.role == security_role and prod_sec_role.person is not None:
-                process_score += 1
-                break
+        filter(Q(product=product) & Q(security_capability__category__name=category_name) & ~Q(status__value=-1))
+    items_total = len(security_capabilities)
 
     for product_security_capability in product_security_capabilities:
         process_score += product_security_capability.status.value
+        if product_security_capability.status.value is get_max_status_value():
+            items_supported += 1
+        if 0 < product_security_capability.status.value < get_max_status_value():
+            items_in_progress += 1
 
-    return process_score, max_process_score
+    # Include security roles, if necessary.
+    if category_name == PROCESS:
+        security_roles = models.SecurityRole.objects.all()
+        items_total += len(security_roles)
 
+        prod_sec_roles = models.ProductSecurityRole.objects.filter(product=product)
+        for security_role in security_roles:
+            for prod_sec_role in prod_sec_roles:
+                if prod_sec_role.role == security_role and prod_sec_role.person is not None:
+                    process_score += get_max_status_value()
+                    items_supported += 1
+                    break
 
-def calculate_technology_score(product):
+    max_process_score = items_total * get_max_status_value()
 
-    technology_score = 0
-    security_capabilities = models.SecurityCapability.objects.filter(category__name=TECHNOLOGY)
-    product_security_capabilities = models.ProductSecurityCapability.objects.\
-        filter(Q(product=product) & Q(security_capability__category__name=TECHNOLOGY) & ~Q(status__value=-1))
-    max_technology_score = len(security_capabilities) * get_max_status_value()
+    print(">>>>>>>>>>>>>>>> max process score for %s: %d" % (category_name, max_process_score))
 
-    for product_security_capability in product_security_capabilities:
-        technology_score += product_security_capability.status.value
-
-    return technology_score, max_technology_score
+    return process_score, max_process_score, items_supported, items_in_progress, items_total
 
 
 def calculate_compliance_score(product):
 
     compliance_score = 0
+    items_supported = 0
+    items_in_progress = 0
     security_capabilities = models.SecurityCapability.objects.filter(category__name=COMPLIANCE)
     product_security_capabilities = models.ProductSecurityCapability.objects.\
         filter(Q(product=product) & Q(security_capability__category__name=COMPLIANCE) & ~Q(status__value=-1))
-    max_compliance_score = len(security_capabilities) * get_max_status_value()
+    items_total = len(security_capabilities)
+    max_compliance_score = items_total * get_max_status_value()
 
     for product_security_capability in product_security_capabilities:
         compliance_score += product_security_capability.status.value
+        if product_security_capability.status.value is get_max_status_value():
+            items_supported += 1
+        if 0 < product_security_capability.status.value < get_max_status_value():
+            items_in_progress += 1
 
     # compliance_score = 0
     # status_values = get_control_status_values()
@@ -82,7 +90,7 @@ def calculate_compliance_score(product):
     #     except KeyError:
     #         print(">>>> ERROR: Unknown product control status: '%s'" % product_control.status)
 
-    return compliance_score, max_compliance_score
+    return compliance_score, max_compliance_score, items_supported, items_in_progress, items_total
 
 
 def calculate_product_score(product_id):
@@ -92,23 +100,29 @@ def calculate_product_score(product_id):
 
     total_score = 0
     total_max_score = 0
+    total_items_supported = 0
+    total_items_in_progress = 0
+    total_items_total = 0
 
     for category in categories:
-        score = 0
-        max_score = 1
-        if category.name == PROCESS:
-            score, max_score = calculate_process_score(product)
-        if category.name == TECHNOLOGY:
-            score, max_score = calculate_technology_score(product)
-        if category.name == COMPLIANCE:
-            score, max_score = calculate_compliance_score(product)
+        score, max_score, items_supported, items_in_progress, items_total = calculate_category_score(product,
+                                                                                                     category.name)
         total_score += score
         total_max_score += max_score
+        total_items_supported += items_supported
+        total_items_in_progress += items_in_progress
+        total_items_total += items_total
         prod_score, _ = models.ProductScore.objects.update_or_create(product=product, category=category.name.lower(),
-                                                                     defaults={'score': score, 'max_score': max_score})
+                                                                     defaults={'score': score, 'max_score': max_score,
+                                                                               'items_supported': items_supported,
+                                                                               'items_in_progress': items_in_progress,
+                                                                               'items_total': items_total})
     prod_score, _ = models.ProductScore.objects.update_or_create(product=product, category=TOTAL,
                                                                  defaults={'score': total_score,
-                                                                           'max_score': total_max_score})
+                                                                           'max_score': total_max_score,
+                                                                           'items_supported': total_items_supported,
+                                                                           'items_in_progress': total_items_in_progress,
+                                                                           'items_total': total_items_total})
 
 
 def calculate_all_product_scores():
@@ -120,14 +134,24 @@ def calculate_all_product_scores():
 def calculate_business_unit_score(bu_id):
     score = 0
     max_score = 0
+    items_supported = 0
+    items_in_progress = 0
+    items_total = 0
     prod_scores = models.ProductScore.objects.filter(product__business_unit=bu_id, category=TOTAL,
                                                      product__published=True)
 
+    # Total the constituent product scores.
     for prod_score in prod_scores:
         score += prod_score.score
         max_score += prod_score.max_score
+        items_supported += prod_score.items_supported
+        items_in_progress += prod_score.items_in_progress
+        items_total += prod_score.items_total
 
-    bu_score, _ = models.BUScore.objects.update_or_create(bu=bu_id, defaults={'score': score, 'max_score': max_score})
+    bu_score, _ = models.BUScore.objects.update_or_create(bu=bu_id, defaults={'score': score, 'max_score': max_score,
+                                                                              'items_supported': items_supported,
+                                                                              'items_in_progress': items_in_progress,
+                                                                              'items_total': items_total})
 
 
 def calculate_all_business_unit_scores():

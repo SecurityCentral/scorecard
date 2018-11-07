@@ -22,6 +22,11 @@ def businessunitsview(request):
                 bu_score_set.add(bu_score)
     bu_group_list = list(bu_group_set)
     bu_score_list = list(bu_score_set)
+
+    @register.filter
+    def get_unsupported_count(bu_score):
+        return bu_score.items_total - bu_score.items_supported - bu_score.items_in_progress
+
     return render(request, 'scorecard/businessunits.html', {'bu_group_list': bu_group_list,
                                                             'bu_score_list': bu_score_list})
 
@@ -94,6 +99,11 @@ def productsview(request):
     business_unit = models.BusinessUnit.objects.get(id=request.GET.get('bu'))
     product_score_list = models.ProductScore.objects.filter(product__business_unit=business_unit,
                                                             category=scoring.TOTAL, product__published=True)
+
+    @register.filter
+    def get_unsupported_count(product_score):
+        return product_score.items_total - product_score.items_supported - product_score.items_in_progress
+
     return render(request, 'scorecard/products.html', {'product_score_list': product_score_list, 'bu': business_unit})
 
 
