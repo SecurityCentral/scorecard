@@ -85,7 +85,7 @@ def calculate_compliance_score(product):
     return compliance_score, max_compliance_score
 
 
-def recalculate_product_score(product_id):
+def calculate_product_score(product_id):
 
     product = models.Product.objects.get(id=product_id)
     categories = models.SecurityCategory.objects.all()
@@ -111,13 +111,13 @@ def recalculate_product_score(product_id):
                                                                            'max_score': total_max_score})
 
 
-def recalculate_all_product_scores():
+def calculate_all_product_scores():
     products = models.Product.objects.filter(published=True)
     for product in products:
-        recalculate_product_score(product.pk)
+        calculate_product_score(product.pk)
 
 
-def recalculate_business_unit_score(bu_id):
+def calculate_business_unit_score(bu_id):
     score = 0
     max_score = 0
     prod_scores = models.ProductScore.objects.filter(product__business_unit=bu_id, category=TOTAL,
@@ -130,10 +130,10 @@ def recalculate_business_unit_score(bu_id):
     bu_score, _ = models.BUScore.objects.update_or_create(bu=bu_id, defaults={'score': score, 'max_score': max_score})
 
 
-def recalculate_all_business_unit_scores():
+def calculate_all_business_unit_scores():
     business_units = models.BusinessUnit.objects.all()
     for business_unit in business_units:
-        recalculate_business_unit_score(business_unit.pk)
+        calculate_business_unit_score(business_unit.pk)
 
 
 def get_max_status_value():

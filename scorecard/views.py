@@ -114,24 +114,24 @@ class SyncProductPages(views.APIView):
         return HttpResponse(status=200)
 
 
-class RecalculateAllProductScores(views.APIView):
+class CalculateAllProductScores(views.APIView):
 
     def post(self, request):
         """
         Recalculates the scores of all products and their respective business units.
         """
-        scoring.recalculate_all_product_scores()
-        scoring.recalculate_all_business_unit_scores()
+        scoring.calculate_all_product_scores()
+        scoring.calculate_all_business_unit_scores()
         return HttpResponse(status=200)
 
 
-class RecalculateProductScores(views.APIView):
+class CalculateProductScores(views.APIView):
 
     def post(self, request):
         """
-        Recalculates the scores of the specified products and their respective business units.
+        Calculates the scores of the specified products and their respective business units.
 
-        The body of this request should contain a list of ids of products whose scores should be recalculated.
+        The body of this request should contain a list of ids of products whose scores should be calculated.
 
         For example:
 
@@ -156,10 +156,10 @@ class RecalculateProductScores(views.APIView):
             except models.Product.DoesNotExist:
                 errors.append("Product with id '%s' does not exist." % product["id"])
         for product in product_set:
-            scoring.recalculate_product_score(product.pk)
+            scoring.calculate_product_score(product.pk)
             bu_set.add(product.business_unit)
         for bu_id in bu_set:
-            scoring.recalculate_business_unit_score(bu_id)
+            scoring.calculate_business_unit_score(bu_id)
 
         result_data['result'] = 'success'
 
