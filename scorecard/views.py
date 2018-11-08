@@ -190,7 +190,7 @@ class CalculateProductScores(views.APIView):
         """
         errors = []
         product_set = set()
-        body = json.loads(request.body)
+        body = json.loads(request.body.decode('utf-8'))
         for product in body:
             try:
                 product_set.add(models.Product.objects.get(pk=product['id']))
@@ -255,7 +255,7 @@ class UpdateProductCapabilities(views.APIView):
         """
         errors = []
         product_set = set()
-        body = json.loads(request.body)
+        body = json.loads(request.body.decode('utf-8'))
         for product in body:
                 capabilities = product['capabilities']
                 for capability in capabilities:
