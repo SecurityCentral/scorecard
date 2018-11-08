@@ -113,6 +113,33 @@ def submit(request):
     return redirect('/businessunitsview')
 
 
+def result(errors):
+    result_data = {'result': 'success'}
+
+    if len(errors) > 0:
+        result_data['result'] = 'failure'
+        result_data['errors'] = []
+        for error in errors:
+            result_data['errors'].append(error)
+
+    return HttpResponse(json.dumps(result_data), content_type='application/json')
+
+
+def recalculate_product_scores(product_set):
+    """
+    Recalculates the scores of all products in product_set. Also recalculates the scores of their associated business
+    units.
+
+    :param product_set:
+    """
+    bu_set = set()
+    for product in product_set:
+        scoring.calculate_product_score(product.pk)
+        bu_set.add(product.business_unit)
+    for bu_id in bu_set:
+        scoring.calculate_business_unit_score(bu_id)
+
+
 class SyncProductPages(views.APIView):
 
     def post(self, request):
@@ -140,43 +167,115 @@ class CalculateProductScores(views.APIView):
     def post(self, request):
         """
         Calculates the scores of the specified products and their respective business units.
-
+        <br/>
         The body of this request should contain a list of ids of products whose scores should be calculated.
-
+        <br/>
         For example:
-
-        <code>[{"id": 12}, {"id": 9}, {"id": 33}]</code>
-
+        <br/>
+        <pre>
+        [
+            {"id": 12},
+            {"id": 9},
+            {"id": 33}
+        ]
+        </pre>
+        <br/>
         Returns a result of "success" if no issues were encountered. Example:
-
-        <code>{"result": "success"}</code>
-
+        <br/><br/>
+        <pre>{"result": "success"}</pre>
+        <br/>
         Otherwise, returns "failure" along with a list of error messages. Example:
-
-        <code>{"result": "failure", "errors": ["Product with id '99' does not exist."]}</code>
+        <br/><br/>
+        <pre>{"result": "failure", "errors": ["Product with id '99' does not exist."]}</pre>
         """
         errors = []
-        result_data = {}
         product_set = set()
-        bu_set = set()
         body = json.loads(request.body)
         for product in body:
             try:
                 product_set.add(models.Product.objects.get(pk=product['id']))
             except models.Product.DoesNotExist:
                 errors.append("Product with id '%s' does not exist." % product["id"])
-        for product in product_set:
-            scoring.calculate_product_score(product.pk)
-            bu_set.add(product.business_unit)
-        for bu_id in bu_set:
-            scoring.calculate_business_unit_score(bu_id)
+        recalculate_product_scores(product_set)
+        return result(errors)
 
-        result_data['result'] = 'success'
 
-        if len(errors) > 0:
-            result_data['result'] = 'failure'
-            result_data['errors'] = []
-            for error in errors:
-                result_data['errors'].append(error)
+class UpdateProductCapabilities(views.APIView):
 
-        return HttpResponse(json.dumps(result_data), content_type='application/json')
+    def post(self, request):
+        """
+        Updates the statuses of the specified security capabilities for the specified products and recalculates the
+        scores of the associated products and their respective business units.
+        <br/>
+        The body of this request should contain a list of products and their associated security capabilities with the
+        desired statuses.
+        <br/>
+        For example:
+        <br/>
+        <pre>
+        [
+            {
+                "name": "OpenShift Container Platform",
+                "capabilities": [
+                    {
+                        "name": "Are you accounting for OWASP top 10 Critical Vuln flaws?",
+                        "status": "implemented"
+                    },
+                    {
+                        "name": "Documented Security Requirements",
+                        "status": "none"
+                    }
+                ]
+            },
+            {
+                "name": "Red Hat OpenStack Platform",
+                "capabilities": [
+                    {
+                        "name": "Are you accounting for OWASP top 10 Critical Vuln flaws?",
+                        "status": "planned"
+                    },
+                    {
+                        "name": "Documented Security Requirements",
+                        "status": "partial"
+                    },
+                    {
+                        "name": "Documented Security Test Cases",
+                        "status": "implemented"
+                    }
+                ]
+            }
+        ]
+        </pre>
+        <br/>
+        Returns a result of "success" if no issues were encountered. Example:
+        <br/><br/>
+        <pre>{"result": "success"}</pre>
+        <br/>
+        Otherwise, returns "result":"failure" along with a list of error messages.
+        """
+        errors = []
+        product_set = set()
+        body = json.loads(request.body)
+        for product in body:
+                capabilities = product['capabilities']
+                for capability in capabilities:
+                    try:
+                        found_product = models.Product.objects.get(name=product['name'])
+                        product_set.add(found_product)
+                    except models.Product.DoesNotExist:
+                        errors.append("Product '%s' does not exist." % product['name'])
+                    try:
+                        found_capability = models.ProductSecurityCapability.objects.get(
+                            product__name=product['name'], security_capability__name=capability['name'])
+                    except models.ProductSecurityCapability.DoesNotExist:
+                        errors.append("Product security capability '%s' for product '%s' does not exist." %
+                                      (capability['name'], product['name']))
+                    try:
+                        found_status = models.Status.objects.get(name=capability['status'])
+                    except models.Status.DoesNotExist:
+                        errors.append("Status '%s' does not exist for product security capability '%s' for product "
+                                      "'%s'." % (capability['status'], capability['name'], product['name']))
+                    found_capability.status = found_status
+                    found_capability.save()
+        recalculate_product_scores(product_set)
+        return result(errors)

@@ -50,6 +50,7 @@ urlpatterns = [
     url(r'^api/syncproductpages', views.SyncProductPages.as_view()),
     url(r'^api/calculateallproductscores', views.CalculateAllProductScores.as_view()),
     url(r'^api/calculateproductscores', views.CalculateProductScores.as_view()),
+    url(r'^api/updateproductcapabilities', views.UpdateProductCapabilities.as_view()),
     url(r'^businessunitsview', views.businessunitsview),
     url(r'^docs/', schema_view),
     url(r'^health', views.health),
