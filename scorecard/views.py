@@ -97,8 +97,8 @@ def health(request):
 
 def productsview(request):
     business_unit = models.BusinessUnit.objects.get(id=request.GET.get('bu'))
-    product_score_list = models.ProductScore.objects.filter(product__business_unit=business_unit,
-                                                            category=scoring.TOTAL, product__published=True)
+    product_score_list = models.ProductScore.objects.filter(
+        product__business_unit=business_unit, category=scoring.TOTAL, product__published=True)
 
     @register.filter
     def get_unsupported_count(product_score):
