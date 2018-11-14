@@ -21,7 +21,6 @@ from rest_framework_swagger.views import get_swagger_view
 from scorecard import api_viewsets
 from scorecard import views
 
-
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'businessunits', api_viewsets.BusinessUnitViewSet)

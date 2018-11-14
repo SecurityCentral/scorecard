@@ -1,8 +1,10 @@
-import json
+import io, json
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template.defaulttags import register
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
 from rest_framework import views
 from scorecard import models
 from scorecard import product_pages, scoring
@@ -32,6 +34,9 @@ def businessunitsview(request):
 
 
 def proddetailsview(request):
+    generate_pdf = False
+    if request.GET.get('pdf') == '1':
+        generate_pdf = True
     product_score = models.ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.TOTAL)
     proc = models.ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.PROCESS.lower())
     tech = models.ProductScore.objects.get(product__id=request.GET.get('product'), category=scoring.TECHNOLOGY.lower())
@@ -75,7 +80,29 @@ def proddetailsview(request):
     def get_item(dictionary, key):
         return dictionary.get(key)
 
-    return render(request, 'scorecard/proddetails.html',
+    if generate_pdf:
+        # Create a file-like buffer to receive PDF data.
+        buffer = io.BytesIO()
+
+        # Create the PDF object, using the buffer as its "file."
+        p = canvas.Canvas(buffer)
+
+        # Draw things on the PDF. Here's where the PDF generation happens.
+        # See the ReportLab documentation for the full list of functionality.
+        p.drawString(2*inch, 10*inch, "Hello world.")
+
+        # Close the PDF object cleanly, and we're done.
+        p.showPage()
+        p.save()
+
+        # FileResponse sets the Content-Disposition header so that browsers
+        # present the option to save the file.
+        # response = FileResponse(buffer, as_attachment=False, filename='hello.pdf')
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="hello.pdf"'
+        response.write(buffer.getvalue())
+    else:
+        response = render(request, 'scorecard/proddetails.html',
                   {'product_score': product_score,
                    'proc': proc,
                    'tech': tech,
@@ -89,6 +116,7 @@ def proddetailsview(request):
                    'tech_sub_categories_list': tech_sub_categories_list,
                    'comp_sub_categories_list': comp_sub_categories_list,
                    'product_roles_list': product_roles_list})
+    return response
 
 
 def health(request):

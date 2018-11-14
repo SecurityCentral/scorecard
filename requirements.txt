@@ -18,4 +18,4 @@ djangorestframework-bulk==0.2.1
 coreapi
 pygments
 django-rest-swagger
-
+reportlab
