@@ -20,4 +20,5 @@ pygments==2.2.0
 django-rest-swagger==2.2.0
 reportlab==3.5.9
 django-nose==1.4.6
+coverage==4.5.2
 

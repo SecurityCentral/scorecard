@@ -1,6 +1,5 @@
 import requests
-from scorecard import models
-from scorecard import scoring
+from scorecard import models, scoring, set_up_data
 
 '''
     Acquires all business unit and product data via the Product Pages API.
@@ -19,6 +18,9 @@ TRUSTED_CAS = './scorecard/static/scorecard/ca-bundle.trust.crt'
 
 
 def update_product_data():
+
+    # Make sure all the base data is present (security capabilities, statuses, etc.)
+    set_up_data.set_up_data()
 
     # Get all the business unit data and create or update accordingly.
     bu_groups = requests.get(BUSINESS_UNITS_API, headers=dict(Accept='application/json'), verify=TRUSTED_CAS).json()

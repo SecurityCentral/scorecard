@@ -12,9 +12,9 @@ from scorecard import models
           not applicable          (grey)      -    
 '''
 
+COMPLIANCE = 'Compliance'
 PROCESS = 'Process'
 TECHNOLOGY = 'Technology'
-COMPLIANCE = 'Compliance'
 TOTAL = 'total'
 
 
@@ -129,14 +129,14 @@ def calculate_all_product_scores():
         calculate_product_score(product.pk)
 
 
-def calculate_business_unit_score(bu_id):
+def calculate_business_unit_score(bu):
     score = 0
     max_score = 0
     items_supported = 0
     items_in_progress = 0
     items_total = 0
     prod_scores = models.ProductScore.objects.filter(
-        product__business_unit=bu_id, category=TOTAL, product__published=True)
+        product__business_unit=bu, category=TOTAL, product__published=True)
 
     # Total the constituent product scores.
     for prod_score in prod_scores:
@@ -147,14 +147,14 @@ def calculate_business_unit_score(bu_id):
         items_total += prod_score.items_total
 
     bu_score, _ = models.BUScore.objects.update_or_create(
-        bu=bu_id, defaults={'score': score, 'max_score': max_score, 'items_supported': items_supported,
-                            'items_in_progress': items_in_progress, 'items_total': items_total})
+            bu=bu, defaults={'score': score, 'max_score': max_score, 'items_supported': items_supported,
+                                'items_in_progress': items_in_progress, 'items_total': items_total})
 
 
 def calculate_all_business_unit_scores():
     business_units = models.BusinessUnit.objects.all()
     for business_unit in business_units:
-        calculate_business_unit_score(business_unit.pk)
+        calculate_business_unit_score(business_unit)
 
 
 def get_max_status_value():
