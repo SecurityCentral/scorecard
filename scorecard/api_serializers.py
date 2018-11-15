@@ -21,6 +21,12 @@ class BUScoreSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class BUGroupScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.BUGroupScore
+        fields = '__all__'
+
+
 class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Person

@@ -14,6 +14,10 @@ class BUScoreAdmin(admin.ModelAdmin):
     list_display = ('score', 'max_score', 'bu')
 
 
+class BUGroupScoreAdmin(admin.ModelAdmin):
+    list_display = ('score', 'max_score', 'bu_group')
+
+
 class ControlAdmin(admin.ModelAdmin):
     list_display = ('name', 'label', 'family', 'standard')
 
@@ -87,6 +91,7 @@ class StatusAdmin(admin.ModelAdmin):
 admin.site.register(models.BusinessUnit, BusinessUnitAdmin)
 admin.site.register(models.BusinessUnitGroup, BusinessUnitGroupAdmin)
 admin.site.register(models.BUScore, BUScoreAdmin)
+admin.site.register(models.BUGroupScore, BUGroupScoreAdmin)
 admin.site.register(models.Control, ControlAdmin)
 admin.site.register(models.ControlFamily, ControlFamilyAdmin)
 admin.site.register(models.Person, PersonAdmin)

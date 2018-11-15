@@ -26,6 +26,20 @@ class BUScore(models.Model):
         return round(self.score * 100 / self.max_score, 1)
 
 
+class BUGroupScore(models.Model):
+    score = models.IntegerField(default=0, help_text="Integer Field")
+    max_score = models.IntegerField(default=1)
+    bu_group = models.ForeignKey(BusinessUnitGroup, on_delete=models.CASCADE, null=True)
+    items_supported = models.IntegerField(default=0)
+    items_in_progress = models.IntegerField(default=0)
+    items_total = models.IntegerField(default=0)
+
+    def percent(self):
+        if self.max_score < 1:
+            self.max_score = 1
+        return round(self.score * 100 / self.max_score, 1)
+
+
 class Person(models.Model):
     full_name = models.CharField(max_length=100, default='')
     email = models.EmailField(default='')
