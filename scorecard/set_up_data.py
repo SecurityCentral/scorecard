@@ -1,9 +1,9 @@
-from scorecard import models
+from scorecard import models, scoring
 
 security_categories = [
-    'Compliance',
-    'Process',
-    'Technology'
+    scoring.COMPLIANCE,
+    scoring.PROCESS,
+    scoring.TECHNOLOGY
 ]
 
 security_roles = {
@@ -11,11 +11,16 @@ security_roles = {
     'Security Escalation Contact': ''
 }
 
+COMPLIANCE_FRAMEWORK_COLLATERAL = "Compliance Framework Collateral"
+SEC_SFTWR_MNGMNT_LFCYCL_GDLNS = "Secure Software Management Lifecycle Guidelines"
+SECURITY_CAPABILITIES = "Security Capabilities"
+SECURITY_EXCEPTION_RISK = "Security Exception Risk"
+
 security_sub_categories = [
-    'Compliance Framework Collateral',
-    'Secure Software Management Lifecycle Guidelines',
-    'Security Capabilities',
-    'Security Exception Risk'
+    COMPLIANCE_FRAMEWORK_COLLATERAL,
+    SEC_SFTWR_MNGMNT_LFCYCL_GDLNS,
+    SECURITY_CAPABILITIES,
+    SECURITY_EXCEPTION_RISK
 ]
 
 statuses = {
@@ -27,48 +32,46 @@ statuses = {
 }
 
 security_capabilities = [
-    [security_categories[1], security_sub_categories[1],
-     "Are you accounting for OWASP top 10 Critical Vuln flaws?", ""],
-    [security_categories[1], security_sub_categories[1], "Documented Security Requirements", ""],
-    [security_categories[1], security_sub_categories[1], "Documented Security Test Cases", ""],
-    [security_categories[1], security_sub_categories[1], "Dynamic appsec testing", ""],
-    [security_categories[1], security_sub_categories[1], "Manual Code Review", ""],
-    [security_categories[1], security_sub_categories[1],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Are you accounting for OWASP top 10 Critical Vuln flaws?", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Documented Security Requirements", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Documented Security Test Cases", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Dynamic appsec testing", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Manual Code Review", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS,
      "Patterns & Reference Architecture documented for Security Features", ""],
-    [security_categories[1], security_sub_categories[1], "Pen testing", ""],
-    [security_categories[1], security_sub_categories[1], "Prior to Packaging, Vuln/Malware/Anti-Virus scanning", ""],
-    [security_categories[1], security_sub_categories[1], "Risk Assessment & Business Impact Analysis", ""],
-    [security_categories[1], security_sub_categories[1], "Secure Coding Guide", ""],
-    [security_categories[1], security_sub_categories[1], "Security Architecture", ""],
-    [security_categories[1], security_sub_categories[1], "Security Awareness Training", ""],
-    [security_categories[1], security_sub_categories[1], "Security Test Plan", ""],
-    [security_categories[1], security_sub_categories[1], "Static Code Analysis", ""],
-    [security_categories[1], security_sub_categories[1], "Threat Model", ""],
-    [security_categories[1], security_sub_categories[3], "Overall Risk Score",
-     "http://prodsec.redhat.com/static/supported.html"],
-    [security_categories[2], security_sub_categories[2],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Pen testing", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Prior to Packaging, Vuln/Malware/Anti-Virus scanning", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Risk Assessment & Business Impact Analysis", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Secure Coding Guide", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Security Architecture", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Security Awareness Training", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Security Test Plan", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Static Code Analysis", ""],
+    [scoring.PROCESS, SEC_SFTWR_MNGMNT_LFCYCL_GDLNS, "Threat Model", ""],
+    [scoring.PROCESS, SECURITY_EXCEPTION_RISK, "Overall Risk Score", "http://prodsec.redhat.com/static/supported.html"],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES,
      "All Logs Use Common Logging and Can Be Sent Externally, Encrypted", ""],
-    [security_categories[2], security_sub_categories[2], "Cryptographic Agility without Recompiling", ""],
-    [security_categories[2], security_sub_categories[2], "Has a Known FirewallD Configuration", "AC-17(9), SC-7(12)"],
-    [security_categories[2], security_sub_categories[2],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Cryptographic Agility without Recompiling", ""],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Has a Known FirewallD Configuration", "AC-17(9), SC-7(12)"],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES,
      "Instructions Exist to Enable SSL/TLS or Is Enabled by Default", "AC-17(2), CM-7"],
-    [security_categories[2], security_sub_categories[2], "Supports Attestation with SCAP", "CM-6"],
-    [security_categories[2], security_sub_categories[2], "Supports Auditing Security Events",
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Supports Attestation with SCAP", "CM-6"],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Supports Auditing Security Events",
      "AC-17(7), AU-1(b), AU-2(a), AU-2(c), AU-2(d), AU-2(4), AU-6(9), AU-12(a), AU-12(c), IR-5"],
-    [security_categories[2], security_sub_categories[2], "Supports Centralized Logging", "AU-6, AU-3(2), SI-4(2)"],
-    [security_categories[2], security_sub_categories[2], "Supports Identity Management", ""],
-    [security_categories[2], security_sub_categories[2], "Supports Kerberos Based SSO", ""],
-    [security_categories[2], security_sub_categories[2], "Works with FIPS Enabled", "AC-17(2)"],
-    [security_categories[2], security_sub_categories[2], "Works with SELINUX Set to Enforcing",
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Supports Centralized Logging", "AU-6, AU-3(2), SI-4(2)"],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Supports Identity Management", ""],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Supports Kerberos Based SSO", ""],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Works with FIPS Enabled", "AC-17(2)"],
+    [scoring.TECHNOLOGY, SECURITY_CAPABILITIES, "Works with SELINUX Set to Enforcing",
      "AC-3, AC-3(3), AC-3(4), AC-4, AC-6, AU-9, SI-6(a), SC-7(12)"],
-    [security_categories[0], security_sub_categories[0], "C2S Benchmarks", ""],
-    [security_categories[0], security_sub_categories[0], "Common Criteria", ""],
-    [security_categories[0], security_sub_categories[0], "FIPS 140-2", ""],
-    [security_categories[0], security_sub_categories[0], "FedRAMP", ""],
-    [security_categories[0], security_sub_categories[0], "HIPAA", ""],
-    [security_categories[0], security_sub_categories[0], "ISO 27001:2013", ""],
-    [security_categories[0], security_sub_categories[0], "NIST 800-53", ""],
-    [security_categories[0], security_sub_categories[0], "PCI-DSSv3", ""]
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "C2S Benchmarks", ""],
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "Common Criteria", ""],
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "FIPS 140-2", ""],
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "FedRAMP", ""],
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "HIPAA", ""],
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "ISO 27001:2013", ""],
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "NIST 800-53", ""],
+    [scoring.COMPLIANCE, COMPLIANCE_FRAMEWORK_COLLATERAL, "PCI-DSSv3", ""]
 ]
 
 
