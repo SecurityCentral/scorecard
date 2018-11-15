@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import BusinessUnit, BusinessUnitGroup, BUScore, Control, ControlFamily, Person, Product, ProductScore, \
-    ProductSecurityRole, ProductControl, ProductSecurityCapability, SecurityCapability, SecurityCategory, \
-    SecuritySubCategory, SecurityRole, Standard, Status
+from scorecard import models
 
 
 class BusinessUnitAdmin(admin.ModelAdmin):
@@ -86,20 +84,20 @@ class StatusAdmin(admin.ModelAdmin):
     list_display = ('name', 'value')
 
 
-admin.site.register(BusinessUnit, BusinessUnitAdmin)
-admin.site.register(BusinessUnitGroup, BusinessUnitGroupAdmin)
-admin.site.register(BUScore, BUScoreAdmin)
-admin.site.register(Control, ControlAdmin)
-admin.site.register(ControlFamily, ControlFamilyAdmin)
-admin.site.register(Person, PersonAdmin)
-admin.site.register(Product, ProductAdmin)
-admin.site.register(ProductScore, ProductScoreAdmin)
-admin.site.register(ProductSecurityRole, ProductRoleAdmin)
-admin.site.register(ProductControl, ProductControlAdmin)
-admin.site.register(ProductSecurityCapability, ProductSecurityCapabilityAdmin)
-admin.site.register(SecurityCapability, SecurityCapabilityAdmin)
-admin.site.register(SecurityCategory, SecurityCategoryAdmin)
-admin.site.register(SecuritySubCategory, SecuritySubCategoryAdmin)
-admin.site.register(SecurityRole, SecurityRoleAdmin)
-admin.site.register(Standard, StandardAdmin)
-admin.site.register(Status, StatusAdmin)
+admin.site.register(models.BusinessUnit, BusinessUnitAdmin)
+admin.site.register(models.BusinessUnitGroup, BusinessUnitGroupAdmin)
+admin.site.register(models.BUScore, BUScoreAdmin)
+admin.site.register(models.Control, ControlAdmin)
+admin.site.register(models.ControlFamily, ControlFamilyAdmin)
+admin.site.register(models.Person, PersonAdmin)
+admin.site.register(models.Product, ProductAdmin)
+admin.site.register(models.ProductScore, ProductScoreAdmin)
+admin.site.register(models.ProductSecurityRole, ProductRoleAdmin)
+admin.site.register(models.ProductControl, ProductControlAdmin)
+admin.site.register(models.ProductSecurityCapability, ProductSecurityCapabilityAdmin)
+admin.site.register(models.SecurityCapability, SecurityCapabilityAdmin)
+admin.site.register(models.SecurityCategory, SecurityCategoryAdmin)
+admin.site.register(models.SecuritySubCategory, SecuritySubCategoryAdmin)
+admin.site.register(models.SecurityRole, SecurityRoleAdmin)
+admin.site.register(models.Standard, StandardAdmin)
+admin.site.register(models.Status, StatusAdmin)

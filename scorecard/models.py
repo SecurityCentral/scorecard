@@ -13,9 +13,12 @@ class BusinessUnit(models.Model):
 
 
 class BUScore(models.Model):
-    score = models.IntegerField(default=0)
+    score = models.IntegerField(default=0, help_text="Integer Field")
     max_score = models.IntegerField(default=1)
     bu = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, null=True)
+    items_supported = models.IntegerField(default=0)
+    items_in_progress = models.IntegerField(default=0)
+    items_total = models.IntegerField(default=0)
 
     def percent(self):
         if self.max_score < 1:
@@ -42,6 +45,9 @@ class ProductScore(models.Model):
     score = models.IntegerField(default=0)
     max_score = models.IntegerField(default=1)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
+    items_supported = models.IntegerField(default=0)
+    items_in_progress = models.IntegerField(default=0)
+    items_total = models.IntegerField(default=0)
 
     def percent(self):
         return round(self.score * 100 / self.max_score, 1)
@@ -91,7 +97,7 @@ class Status(models.Model):
 
 
 class ProductSecurityCapability(models.Model):
-    status = models.ForeignKey(Status, null=True, on_delete=models.SET(''))
+    status = models.ForeignKey(Status, null=True, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     security_capability = models.ForeignKey(SecurityCapability, on_delete=models.CASCADE)
     details = models.TextField(default='', blank=True)
@@ -124,4 +130,3 @@ class ProductControl(models.Model):
     status = models.CharField(max_length=20)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     control = models.ForeignKey(Control, on_delete=models.CASCADE)
-

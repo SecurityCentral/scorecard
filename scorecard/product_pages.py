@@ -1,7 +1,5 @@
 import requests
-from .models import BusinessUnit, BusinessUnitGroup, Person, Product, ProductSecurityCapability, ProductSecurityRole, \
-    SecurityCapability, SecurityRole, Status
-from scorecard import scoring
+from scorecard import models, scoring, set_up_data
 
 '''
     Acquires all business unit and product data via the Product Pages API.
@@ -21,35 +19,35 @@ TRUSTED_CAS = './scorecard/static/scorecard/ca-bundle.trust.crt'
 
 def update_product_data():
 
+    # Make sure all the base data is present (security capabilities, statuses, etc.)
+    set_up_data.set_up_data()
+
     # Get all the business unit data and create or update accordingly.
     bu_groups = requests.get(BUSINESS_UNITS_API, headers=dict(Accept='application/json'), verify=TRUSTED_CAS).json()
     for bu_group in bu_groups:
-        updated_bu_group, _ = BusinessUnitGroup.objects.get_or_create(pp_id=bu_group['id'])
-        updated_bu_group.name = bu_group['name']
-        updated_bu_group.save()
+        updated_bu_group, _ = models.BusinessUnitGroup.objects.update_or_create(
+            pp_id=bu_group['id'], defaults={'name': bu_group['name']})
         business_units = bu_group['bus']
         for bu in business_units:
-            updated_bu, _ = BusinessUnit.objects.get_or_create(pp_id=bu['id'])
-            updated_bu.name = bu['name']
-            updated_bu.bu_group = updated_bu_group
-            updated_bu.save()
+            updated_bu, _ = models.BusinessUnit.objects.update_or_create(
+                pp_id=bu['id'], defaults={'name': bu['name'], 'bu_group': updated_bu_group})
 
     # Get all the product data and create or update accordingly.
     products = requests.get(PRODUCTS_API, headers=dict(Accept='application/json'), verify=TRUSTED_CAS).json()
-    security_capabilities = SecurityCapability.objects.all()
-    none_status = Status.objects.get(value=0)
+    security_capabilities = models.SecurityCapability.objects.all()
+    none_status = models.Status.objects.get(value=0)
 
     for product in products:
-        updated_product, _ = Product.objects.get_or_create(pp_id=product['id'])
-        updated_product.name = product['name']
-        updated_product.business_unit = BusinessUnit.objects.filter(pp_id=product['bu'])[0]
-        updated_product.save()
+        updated_product, _ = models.Product.objects.update_or_create(
+            pp_id=product['id'],
+            defaults={'name': product['name'],
+                      'business_unit': models.BusinessUnit.objects.filter(pp_id=product['bu'])[0]})
 
         # For each product, get all the associated people.
         people = requests.get(PRODUCT_PAGES_API + 'products/' + str(updated_product.pp_id) + PEOPLE_PARTIAL_API,
                               headers=dict(Accept='application/json'), verify=TRUSTED_CAS).json()
 
-        security_roles = SecurityRole.objects.all()
+        security_roles = models.SecurityRole.objects.all()
 
         for security_role in security_roles:
             role_found = False
@@ -73,33 +71,31 @@ def update_product_data():
                     role_found = True
 
                     # Record the product role.
-                    updated_person, _ = Person.objects.get_or_create(pp_id=person['id'])
-                    updated_person.full_name = person['user_full_name']
-                    updated_person.email = person['user_email']
-                    updated_person.username = person['username']
-                    updated_person.save()
-                    product_role, _ = ProductSecurityRole.objects.get_or_create(role=security_role,
-                                                                                product=updated_product,
-                                                                                person=updated_person)
+                    updated_person, _ = models.Person.objects.update_or_create(
+                        pp_id=person['id'],
+                        defaults={'full_name': person['user_full_name'], 'email': person['user_email'],
+                                  'username': person['username']})
+                    product_role, _ = models.ProductSecurityRole.objects.get_or_create(
+                        role=security_role, product=updated_product, person=updated_person)
 
                     # Since a person in the role was found, delete any previous "missing role" records.
-                    ProductSecurityRole.objects.filter(role=security_role, product=updated_product,
-                                                       person=None).delete()
+                    models.ProductSecurityRole.objects.filter(
+                        role=security_role, product=updated_product, person=None).delete()
 
             # If the product doesn't have a security role, report it and delete anyone previously listed in the role.
             if not role_found:
-                ProductSecurityRole.objects.filter(role=security_role, product=updated_product).delete()
-                product_role, _ = ProductSecurityRole.objects.get_or_create(role=security_role,
-                                                                            product=updated_product, person=None)
+                models.ProductSecurityRole.objects.filter(role=security_role, product=updated_product).delete()
+                product_role, _ = models.ProductSecurityRole.objects.get_or_create(
+                    role=security_role, product=updated_product, person=None)
 
         # Update (or create default) security capabilities.
         for security_capability in security_capabilities:
-            updated_security_capability_product, created = ProductSecurityCapability.objects.get_or_create(
+            updated_security_capability_product, created = models.ProductSecurityCapability.objects.get_or_create(
                 product=updated_product, security_capability=security_capability)
             if created:
                 updated_security_capability_product.status = none_status
                 updated_security_capability_product.save()
 
-        scoring.update_product_score(updated_product)
+        scoring.calculate_product_score(updated_product.pk)
 
-    scoring.update_business_unit_scores()
+    scoring.calculate_all_business_unit_scores()
