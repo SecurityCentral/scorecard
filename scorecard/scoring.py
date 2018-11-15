@@ -148,13 +148,40 @@ def calculate_business_unit_score(bu):
 
     bu_score, _ = models.BUScore.objects.update_or_create(
             bu=bu, defaults={'score': score, 'max_score': max_score, 'items_supported': items_supported,
-                                'items_in_progress': items_in_progress, 'items_total': items_total})
+                             'items_in_progress': items_in_progress, 'items_total': items_total})
+
+
+def calculate_bu_group_score(bu_group):
+    score = 0
+    max_score = 0
+    items_supported = 0
+    items_in_progress = 0
+    items_total = 0
+    bu_scores = models.BUScore.objects.filter(bu__bu_group=bu_group)
+
+    # Total the constituent bu scores.
+    for bu_score in bu_scores:
+        score += bu_score.score
+        max_score += bu_score.max_score
+        items_supported += bu_score.items_supported
+        items_in_progress += bu_score.items_in_progress
+        items_total += bu_score.items_total
+
+    bu_group_score, _ = models.BUGroupScore.objects.update_or_create(
+        bu_group=bu_group, defaults={'score': score, 'max_score': max_score, 'items_supported': items_supported,
+                                     'items_in_progress': items_in_progress, 'items_total': items_total})
 
 
 def calculate_all_business_unit_scores():
     business_units = models.BusinessUnit.objects.all()
     for business_unit in business_units:
         calculate_business_unit_score(business_unit)
+
+
+def calculate_all_bu_group_scores():
+    bu_groups = models.BusinessUnitGroup.objects.all()
+    for bu_group in bu_groups:
+        calculate_bu_group_score(bu_group)
 
 
 def get_max_status_value():

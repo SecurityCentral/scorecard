@@ -156,16 +156,20 @@ def result(errors):
 def recalculate_product_scores(product_set):
     """
     Recalculates the scores of all products in product_set. Also recalculates the scores of their associated business
-    units.
+    units and groups.
 
     :param product_set:
     """
     bu_set = set()
+    bu_group_set = set()
     for product in product_set:
         scoring.calculate_product_score(product.pk)
         bu_set.add(product.business_unit)
-    for bu_id in bu_set:
-        scoring.calculate_business_unit_score(bu_id)
+    for bu in bu_set:
+        scoring.calculate_business_unit_score(bu)
+        bu_group_set.add(bu.bu_group)
+    for bu_group in bu_group_set:
+        scoring.calculate_bu_group_score(bu_group)
 
 
 class SyncProductPages(views.APIView):
@@ -173,7 +177,8 @@ class SyncProductPages(views.APIView):
     def post(self, request):
         """
         Synchronizes product and business group data with Product Pages. Does not delete any data, only adds or
-        updates. Following the sync, a complete recalculation of all product and business unit scores is executed.
+        updates. Following the sync, a complete recalculation of all product and business unit and bu group scores is
+        executed.
         """
         product_pages.update_product_data()
         return HttpResponse(status=200)
@@ -183,10 +188,11 @@ class CalculateAllProductScores(views.APIView):
 
     def post(self, request):
         """
-        Recalculates the scores of all products and their respective business units.
+        Recalculates the scores of all products and their respective business units and groups.
         """
         scoring.calculate_all_product_scores()
         scoring.calculate_all_business_unit_scores()
+        scoring.calculate_all_bu_group_scores()
         return HttpResponse(status=200)
 
 
@@ -194,7 +200,7 @@ class CalculateProductScores(views.APIView):
 
     def post(self, request):
         """
-        Calculates the scores of the specified products and their respective business units.
+        Calculates the scores of the specified products and their respective business units and groups.
         <br/>
         The body of this request should contain a list of ids of products whose scores should be calculated.
         <br/>

@@ -31,6 +31,14 @@ class BUScoreViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'delete']
 
 
+class BUGroupScoreViewSet(viewsets.ModelViewSet):
+    queryset = models.BUGroupScore.objects.all()
+    serializer_class = api_serializers.BUGroupScoreSerializer
+    filter_backends = (filters.SearchFilter, rest_framework.DjangoFilterBackend)
+    filter_fields = ('id', 'score', 'max_score', 'bu_group')
+    http_method_names = ['get', 'delete']
+
+
 class PersonViewSet(viewsets.ModelViewSet):
     queryset = models.Person.objects.all()
     serializer_class = api_serializers.PersonSerializer

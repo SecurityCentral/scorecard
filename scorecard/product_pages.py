@@ -99,3 +99,4 @@ def update_product_data():
         scoring.calculate_product_score(updated_product.pk)
 
     scoring.calculate_all_business_unit_scores()
+    scoring.calculate_all_bu_group_scores()
